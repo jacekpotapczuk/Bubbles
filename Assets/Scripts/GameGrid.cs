@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameGrid : MonoBehaviour
@@ -8,17 +9,64 @@ public class GameGrid : MonoBehaviour
 
     [Header("References")] 
     [SerializeField] private Tile tilePrefab;
+    [SerializeField] private GameObject circlePrefab;
+
 
     private Tile[,] tiles;
     private float sideLength;
+    private Camera mainCamera;
+    private AStarPathfinding pathfinding;
+    
     private void Awake()
     {
         sideLength = CalculateSideLength();
+        mainCamera = Camera.main;
     }
 
     private void Start()
     {
         InitializeGrid();
+        pathfinding = new AStarPathfinding();
+    }
+    
+    public Tile GetTile(Vector3 screenPosition)
+    {
+        var worldPos = mainCamera.ScreenToWorldPoint(screenPosition);
+        var localPos = transform.InverseTransformPoint(worldPos);
+
+        var tileSize = sideLength / gridSize;
+        var x = Mathf.FloorToInt(localPos.x / tileSize);
+        var y = Mathf.FloorToInt(localPos.y / tileSize);
+
+        Debug.Log($"GetTile, localPos:{localPos} => ({x}, {y})");
+        return GetTile(x, y);
+    }
+
+    public Tile GetTile(int x, int y)
+    {
+        if (x >= 0 && x < gridSize && y >= 0 && y < gridSize)
+            return tiles[x, y];
+        return null;
+    }
+
+    public Tile[] GetPath(Tile startTile, Tile endTile)
+    {
+        var nodePath =pathfinding.GetPath(startTile, endTile);
+        if (nodePath == null)
+            return null;
+        var tilePath = new Tile[nodePath.Count];
+        for (var i = 0; i < nodePath.Count; i++)
+            tilePath[i] = GetTile(nodePath[i].X, nodePath[i].Y);
+
+        return tilePath;
+    }
+
+    public void SpawnAt(Tile tile)
+    {
+        var circle = Instantiate(circlePrefab, transform, true);
+        circle.transform.localScale = tile.transform.localScale;
+        circle.transform.localPosition = tile.transform.localPosition;
+        tile.IsWalkable = false;
     }
 
     private void InitializeGrid()
@@ -74,9 +122,9 @@ public class GameGrid : MonoBehaviour
 
     private float CalculateSideLength()
     {
-        var camera = Camera.main;
-        var ortoSize = camera.orthographicSize;
-        var aspect = camera.aspect;
+        var cam = mainCamera == null ? Camera.main : mainCamera;
+        var ortoSize = cam.orthographicSize;
+        var aspect = cam.aspect;
         var sideLen = ortoSize * 2 * aspect - 2 * margin;
         return sideLen;
     }
@@ -91,4 +139,5 @@ public class GameGrid : MonoBehaviour
         Gizmos.DrawWireCube(pos, Vector3.one * side);
         Gizmos.color = Color.white;
     }
+    
 }
