@@ -7,10 +7,13 @@ public class Tile : MonoBehaviour, INode
     public int X { get; private set; }
     public int Y { get; private set; }
     
+    public Shape Shape { get; set; }
+    
     public Tile NorthNeighbour { get; private set; }
     public Tile SouthNeighbour { get; private set; }
     public Tile WestNeighbour { get; private set; }
     public Tile EastNeighbour { get; private set; }
+    
 
     // pathfinding
     public int GScore { get; set; }
@@ -19,7 +22,7 @@ public class Tile : MonoBehaviour, INode
     
     public INode Parent { get; set; }
 
-    public bool IsWalkable { get; set; } = true;
+    public bool IsWalkable => Shape == null;
 
     
     public List<INode> GetNeighbours()

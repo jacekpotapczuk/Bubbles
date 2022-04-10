@@ -8,6 +8,7 @@ public class AStarPathfinding
     private HashSet<INode> closedList;
     private INode endNode;
 
+    private int testI;
     public AStarPathfinding()
     {
     }
@@ -39,7 +40,7 @@ public class AStarPathfinding
         }
         return path;
     }
-    
+
     // returns false when pathfinding is complete
     private bool DoPathfinding() 
     {

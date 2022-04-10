@@ -9,7 +9,6 @@ public class GameGrid : MonoBehaviour
 
     [Header("References")] 
     [SerializeField] private Tile tilePrefab;
-    [SerializeField] private GameObject circlePrefab;
 
 
     private Tile[,] tiles;
@@ -38,7 +37,7 @@ public class GameGrid : MonoBehaviour
         var x = Mathf.FloorToInt(localPos.x / tileSize);
         var y = Mathf.FloorToInt(localPos.y / tileSize);
 
-        Debug.Log($"GetTile, localPos:{localPos} => ({x}, {y})");
+        //Debug.Log($"GetTile, localPos:{localPos} => ({x}, {y})");
         return GetTile(x, y);
     }
 
@@ -59,14 +58,6 @@ public class GameGrid : MonoBehaviour
             tilePath[i] = GetTile(nodePath[i].X, nodePath[i].Y);
 
         return tilePath;
-    }
-
-    public void SpawnAt(Tile tile)
-    {
-        var circle = Instantiate(circlePrefab, transform, true);
-        circle.transform.localScale = tile.transform.localScale;
-        circle.transform.localPosition = tile.transform.localPosition;
-        tile.IsWalkable = false;
     }
 
     private void InitializeGrid()

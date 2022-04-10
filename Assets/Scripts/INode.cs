@@ -16,6 +16,4 @@ public interface INode
     public int FScore { get; }
 
     public bool IsWalkable { get; }
-
-
 }
