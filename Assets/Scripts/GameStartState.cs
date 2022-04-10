@@ -13,7 +13,7 @@ public class GameStartState : IGameState
     {
         Debug.Log("Game Start State Enter");
         gameManager.Grid.CleanUpTiles();
-        // reset score
+        gameManager.ResetScore();
         return new PlayerTurnState(gameManager);
     }
 

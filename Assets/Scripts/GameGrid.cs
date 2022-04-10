@@ -54,6 +54,8 @@ public class GameGrid : MonoBehaviour
                     emptyTiles.Add(tiles[x, y]);
             }
         }
+        if (emptyTiles.Count == 0)
+            return null;
         return emptyTiles[Random.Range(0, emptyTiles.Count)];
     }
 

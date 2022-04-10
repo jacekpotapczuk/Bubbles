@@ -24,6 +24,13 @@ public class PlayerTurnState : IGameState
         for (int i = 0; i < gameManager.BubblesToSpawnPerTurn; i++)
         {
             var tile = gameManager.Grid.GetRandomEmptyTile();
+            if (tile == null) // no empty spots left
+            {
+                var state = new GameStartState(gameManager);
+                state.Enter(); // todo: ogarnąć to, zeby bylo consistant
+                return state;
+            }
+                
             gameManager.CircleFactory.SpawnAt(tile);
             CheckForPoints(tile.Shape);
         }
