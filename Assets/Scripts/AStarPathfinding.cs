@@ -9,9 +9,6 @@ public class AStarPathfinding
     private INode endNode;
 
     private int testI;
-    public AStarPathfinding()
-    {
-    }
     
     public List<INode> GetPath(INode startNode, INode endNode)
     {

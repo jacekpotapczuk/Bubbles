@@ -20,10 +20,6 @@ public class GameGrid : MonoBehaviour
     {
         sideLength = CalculateSideLength();
         mainCamera = Camera.main;
-    }
-
-    private void Start()
-    {
         InitializeGrid();
         pathfinding = new AStarPathfinding();
     }
@@ -60,19 +56,20 @@ public class GameGrid : MonoBehaviour
         return tilePath;
     }
 
-    [ContextMenu("Test walkable")]
-    private void TestWalkable()
+    public Tile GetRandomEmptyTile()
     {
+        var emptyTiles = new List<Tile>();
+        
         for (var y = 0; y < gridSize; y++)
         {
             for (var x = 0; x < gridSize; x++)
             {
                 if (tiles[x, y].IsWalkable)
-                    tiles[x, y].GetComponentInChildren<SpriteRenderer>().color = Color.green;
-                else
-                    tiles[x, y].GetComponentInChildren<SpriteRenderer>().color = Color.red;
+                    emptyTiles.Add(tiles[x, y]);
             }
         }
+
+        return emptyTiles[Random.Range(0, emptyTiles.Count)];
     }
 
     private void InitializeGrid()
@@ -146,4 +143,19 @@ public class GameGrid : MonoBehaviour
         Gizmos.color = Color.white;
     }
     
+    
+    [ContextMenu("Test walkable")]
+    private void TestWalkable()
+    {
+        for (var y = 0; y < gridSize; y++)
+        {
+            for (var x = 0; x < gridSize; x++)
+            {
+                if (tiles[x, y].IsWalkable)
+                    tiles[x, y].GetComponentInChildren<SpriteRenderer>().color = Color.green;
+                else
+                    tiles[x, y].GetComponentInChildren<SpriteRenderer>().color = Color.red;
+            }
+        }
+    }
 }
