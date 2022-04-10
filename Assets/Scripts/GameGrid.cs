@@ -68,6 +68,41 @@ public class GameGrid : MonoBehaviour
         }
     }
 
+    // dirX, dirY should always be  one of these: -1, 0, 1
+    // for example if u want to get north direction use dirX = 0, dirY = 1
+    public List<Shape> GetMatchingShapesInDirection(Shape originShape, int dirX, int dirY)
+    {
+        var startX = originShape.Tile.X;
+        var startY = originShape.Tile.Y;
+
+        Shape next;
+        int x;
+        int y;
+        (next, x, y) = MatchNext(startX, startY, dirX, dirY, originShape.Color);
+
+        var shapes = new List<Shape>();
+        while (next != null)
+        {
+            shapes.Add(next);
+            (next, x, y) = MatchNext(x, y, dirX, dirY, originShape.Color);
+        }
+
+        return shapes;
+    }
+
+    private (Shape, int, int) MatchNext(int x, int y, int dirX, int dirY, Color color)
+    {
+        var newX = x + dirX;
+        var newY = y + dirY;
+        var tile = GetTile(newX, newY);
+        if (tile == null)
+            return (null, -1, -1);
+        if(tile.Shape == null)
+            return (null, -1, -1);
+        if(!tile.Shape.MatchColor(color))
+            return (null, -1, -1);
+        return (tile.Shape, newX, newY);
+    }
     private void InitializeGrid()
     {
         // adjust position so we stay nicely centered regardless of size

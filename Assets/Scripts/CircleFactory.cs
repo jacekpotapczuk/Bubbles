@@ -18,7 +18,8 @@ public class CircleFactory : MonoBehaviour
         var circle = factory.SpawnAt(tile);
         if (circle == null)
             return;
-        circle.Factory = this;
+        if(circle.Factory == null)
+            circle.Factory = this;
         circle.Color = availableColors[Random.Range(0, availableColors.Length)];
     }
 

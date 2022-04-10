@@ -6,7 +6,7 @@ public class Circle : Shape, IMovable
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField, Range(3f, 15f), Tooltip("In tiles per second.")] private float movementSpeed = 5f;
 
-    public Color Color
+    public override Color Color
     {
         get => color;
         set
@@ -54,6 +54,7 @@ public class Circle : Shape, IMovable
 
     public override void Remove()
     {
+        Tile.Shape = null;
         factory.Remove(this);
     }
     
