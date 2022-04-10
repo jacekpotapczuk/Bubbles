@@ -60,6 +60,21 @@ public class GameGrid : MonoBehaviour
         return tilePath;
     }
 
+    [ContextMenu("Test walkable")]
+    private void TestWalkable()
+    {
+        for (var y = 0; y < gridSize; y++)
+        {
+            for (var x = 0; x < gridSize; x++)
+            {
+                if (tiles[x, y].IsWalkable)
+                    tiles[x, y].GetComponentInChildren<SpriteRenderer>().color = Color.green;
+                else
+                    tiles[x, y].GetComponentInChildren<SpriteRenderer>().color = Color.red;
+            }
+        }
+    }
+
     private void InitializeGrid()
     {
         // adjust position so we stay nicely centered regardless of size

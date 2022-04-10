@@ -15,13 +15,13 @@ public class AStarPathfinding
     
     public List<INode> GetPath(INode startNode, INode endNode)
     {
-        if (!startNode.IsWalkable || !endNode.IsWalkable)
+        if (!endNode.IsWalkable)
             return null;
 
         openList = new SortedSet<INode>(new ByFScore());
         closedList = new HashSet<INode>();
         this.endNode = endNode;
-        
+        testI = 0;
         openList.Add(startNode);
 
         while (DoPathfinding())
@@ -38,12 +38,20 @@ public class AStarPathfinding
             path.Add(node);
             node = node.Parent;
         }
+        path.Reverse();
         return path;
     }
 
     // returns false when pathfinding is complete
-    private bool DoPathfinding() 
+    private bool DoPathfinding()
     {
+        testI += 1;
+        if (testI > 1000)
+        {
+            Debug.LogError("Infinity");
+            Debug.Break();
+            
+        }
         if (openList.Count == 0)
         {
             endNode.Parent = null;
