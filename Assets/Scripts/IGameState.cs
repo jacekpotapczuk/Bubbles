@@ -1,7 +1,7 @@
 
 public interface IGameState
 {
-    public IGameState Enter(GameManager gameManager);
-    public IGameState Update(GameManager gameManager);
+    public IGameState Enter();
+    public IGameState Update();
 
 }

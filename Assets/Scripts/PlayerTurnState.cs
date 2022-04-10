@@ -4,11 +4,18 @@ using UnityEngine;
 public class PlayerTurnState : IGameState
 {
     private Shape selectedShape;
+    private Shape lastTryingToMoveShape; // shape that last moved (or at least tried to), used for score check
 
     private bool moving = false;
     private bool moved = false;
+
+    private GameManager gameManager;
+    public PlayerTurnState(GameManager gameManager)
+    {
+        this.gameManager = gameManager;
+    }
     
-    public IGameState Enter(GameManager gameManager)
+    public IGameState Enter()
     {
         Debug.Log("Player Turn state enter");
         // "grow" feature circles
@@ -20,11 +27,11 @@ public class PlayerTurnState : IGameState
         return this;
     }
 
-    public IGameState Update(GameManager gameManager)
+    public IGameState Update()
     {
         //Debug.Log("Player Turn state update");
 
-        return HandleInput(gameManager);
+        return HandleInput();
       
         // handle input
         // exit when turn complete
@@ -32,12 +39,16 @@ public class PlayerTurnState : IGameState
         // show feature circles
     }
 
-    private IGameState HandleInput(GameManager gameManager)
+    private IGameState HandleInput()
     {
         if (moving)
             return this;
         if (moved)
-            return new PlayerTurnState();
+        {
+            CheckForPoints(gameManager);
+            return new PlayerTurnState(gameManager);
+        }
+            
         var currentTile = gameManager.Grid.GetTile(Input.mousePosition);
         if (currentTile == null)
             return this;
@@ -71,6 +82,7 @@ public class PlayerTurnState : IGameState
             {
                 selectedShape.DeSelect();
                 selectedShape = null;
+                lastTryingToMoveShape = selectedShape;
                 TryMove(movable, gameManager, currentTile);    
             }
         }
@@ -87,5 +99,10 @@ public class PlayerTurnState : IGameState
         
         moving = false;
         moved = moveTask.Result;
+    }
+
+    private void CheckForPoints(GameManager gameManager)
+    {
+            
     }
 }

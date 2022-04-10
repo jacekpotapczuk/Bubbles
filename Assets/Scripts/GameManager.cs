@@ -13,24 +13,24 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        currentGameState = new GameStartState();
-        var gameState  = currentGameState.Enter(this);
+        currentGameState = new GameStartState(this);
+        var gameState  = currentGameState.Enter();
         if (gameState != currentGameState)
-            currentGameState = gameState.Enter(this);
+            currentGameState = gameState.Enter();
     }
     
 
     private void Update()
     {
-        var gameState = currentGameState.Update(this);
+        var gameState = currentGameState.Update();
         if (gameState != currentGameState)
-            currentGameState = gameState.Enter(this);
+            currentGameState = gameState.Enter();
 
         // temporary, for easy testing
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            currentGameState = new TestTurnState();
-            currentGameState.Enter(this);
+            currentGameState = new TestTurnState(this);
+            currentGameState.Enter();
         }   
     }
 }

@@ -3,14 +3,20 @@ using UnityEngine;
 public class TestTurnState : IGameState
 {
     private Shape selectedShape;
+    private GameManager gameManager;
 
-    public IGameState Enter(GameManager gameManager)
+    public TestTurnState(GameManager gameManager)
+    {
+        this.gameManager = gameManager;
+    }
+    
+    public IGameState Enter()
     {
         gameManager.Grid.TestWalkable();
         return this;
     }
 
-    public IGameState Update(GameManager gameManager)
+    public IGameState Update()
     {
         var currentTile = gameManager.Grid.GetTile(Input.mousePosition);
         if (currentTile == null)
