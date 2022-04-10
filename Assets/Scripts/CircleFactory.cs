@@ -18,11 +18,17 @@ public class CircleFactory : MonoBehaviour
         var circle = factory.SpawnAt(tile);
         if (circle == null)
             return;
+        circle.Factory = this;
         circle.Color = availableColors[Random.Range(0, availableColors.Length)];
     }
 
     public void RemoveAt(Tile tile)
     {
         factory.RemoveAt(tile);
+    }
+
+    public void Remove(Circle circle)
+    {
+        factory.Reclaim(circle);
     }
 }

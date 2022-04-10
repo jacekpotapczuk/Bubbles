@@ -14,14 +14,12 @@ public class GameGrid : MonoBehaviour
     private Tile[,] tiles;
     private float sideLength;
     private Camera mainCamera;
-    private AStarPathfinding pathfinding;
-    
+
     private void Awake()
     {
         sideLength = CalculateSideLength();
         mainCamera = Camera.main;
         InitializeGrid();
-        pathfinding = new AStarPathfinding();
     }
     
     public Tile GetTile(Vector3 screenPosition)
@@ -43,19 +41,7 @@ public class GameGrid : MonoBehaviour
             return tiles[x, y];
         return null;
     }
-
-    public Tile[] GetPath(Tile startTile, Tile endTile)
-    {
-        var nodePath =pathfinding.GetPath(startTile, endTile);
-        if (nodePath == null)
-            return null;
-        var tilePath = new Tile[nodePath.Count];
-        for (var i = 0; i < nodePath.Count; i++)
-            tilePath[i] = GetTile(nodePath[i].X, nodePath[i].Y);
-
-        return tilePath;
-    }
-
+    
     public Tile GetRandomEmptyTile()
     {
         var emptyTiles = new List<Tile>();
@@ -68,8 +54,18 @@ public class GameGrid : MonoBehaviour
                     emptyTiles.Add(tiles[x, y]);
             }
         }
-
         return emptyTiles[Random.Range(0, emptyTiles.Count)];
+    }
+
+    public void CleanUpTiles()
+    {
+        for (var y = 0; y < gridSize; y++)
+        {
+            for (var x = 0; x < gridSize; x++)
+            {
+                tiles[x, y].CleanUp();
+            }
+        }
     }
 
     private void InitializeGrid()
@@ -145,7 +141,7 @@ public class GameGrid : MonoBehaviour
     
     
     [ContextMenu("Test walkable")]
-    private void TestWalkable()
+    public void TestWalkable()
     {
         for (var y = 0; y < gridSize; y++)
         {

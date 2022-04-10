@@ -7,8 +7,6 @@ public class AStarPathfinding
     private SortedSet<INode> openList;
     private HashSet<INode> closedList;
     private INode endNode;
-
-    private int testI;
     
     public List<INode> GetPath(INode startNode, INode endNode)
     {
@@ -18,12 +16,11 @@ public class AStarPathfinding
         openList = new SortedSet<INode>(new ByFScore());
         closedList = new HashSet<INode>();
         this.endNode = endNode;
-        testI = 0;
+        startNode.Parent = null;
         openList.Add(startNode);
 
         while (DoPathfinding())
         {
-            
         }
 
         if (endNode.Parent == null)
@@ -42,13 +39,6 @@ public class AStarPathfinding
     // returns false when pathfinding is complete
     private bool DoPathfinding()
     {
-        testI += 1;
-        if (testI > 1000)
-        {
-            Debug.LogError("Infinity");
-            Debug.Break();
-            
-        }
         if (openList.Count == 0)
         {
             endNode.Parent = null;

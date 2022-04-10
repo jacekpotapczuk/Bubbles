@@ -1,11 +1,9 @@
-
 using System.Threading.Tasks;
 using UnityEngine;
 
 public class PlayerTurnState : IGameState
 {
-    private Circle selectedCircle;
-    private Tile selectedTile;
+    private Shape selectedShape;
 
     private bool moving = false;
     private bool moved = false;
@@ -43,36 +41,51 @@ public class PlayerTurnState : IGameState
         var currentTile = gameManager.Grid.GetTile(Input.mousePosition);
         if (currentTile == null)
             return this;
-
+        
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("Select");
-            var shape = currentTile.Shape;
-            if (shape == null)
-                return this;
-            if (shape is Circle circle)
+            if (currentTile.Shape != null)
             {
-                selectedCircle = circle;
-                selectedTile = currentTile;
+                currentTile.Shape.Select();
+                
+                if(selectedShape != null)
+                    selectedShape.DeSelect();
+                selectedShape = currentTile.Shape;
+
+            }
+            else
+            {
+                if (selectedShape != null)
+                {
+                    selectedShape.DeSelect();
+                    selectedShape = null;
+                }
             }
         }
         else if (Input.GetMouseButtonDown(1))
         {
-            Debug.Log("Move");
-            if (selectedCircle == null)
+            if (selectedShape == null)
                 return this;
 
-            moving = true;
-            MoveAlong(gameManager, currentTile);
+            if (selectedShape is IMovable movable)
+            {
+                selectedShape.DeSelect();
+                selectedShape = null;
+                TryMove(movable, gameManager, currentTile);    
+            }
         }
 
         return this;
     }
 
-    private async Task MoveAlong(GameManager gameManager, Tile endTile)
+    private async Task TryMove(IMovable movable, GameManager gameManager, Tile endTile)
     {
-        await selectedCircle.MoveAlong(gameManager.Grid.GetPath(selectedTile, endTile));
+        moving = true;
+        var moveTask = movable.TryMoveTo(endTile, gameManager.Grid);
+        while(!moveTask.IsCompleted)
+            await Task.Yield();
+        
         moving = false;
-        moved = true;
+        moved = moveTask.Result;
     }
 }

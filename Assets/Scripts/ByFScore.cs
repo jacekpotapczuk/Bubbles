@@ -6,7 +6,12 @@ public class ByFScore : IComparer<INode>
     {
         if (node1.FScore < node2.FScore)
             return -1;
-        if (node2.FScore > node1.FScore)
+        if (node2.FScore < node1.FScore)
+            return 1;
+        
+        if (node1.HScore < node2.HScore)
+            return -1;
+        if (node2.HScore < node1.HScore)
             return 1;
         
         // this order doesn't really matter,

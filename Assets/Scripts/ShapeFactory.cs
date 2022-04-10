@@ -37,6 +37,7 @@ public class ShapeFactory<T> where T : Shape
 
         shape.transform.position = tile.transform.position;
         tile.Shape = shape;
+        shape.Tile = tile;
         return shape;
     }
 
@@ -57,6 +58,12 @@ public class ShapeFactory<T> where T : Shape
         tile.Shape.gameObject.SetActive(false);
         shapePool.Push((T)tile.Shape);
         tile.Shape = null;
+    }
+
+    public void Reclaim(T shape)
+    {
+        shapePool.Push(shape);
+        shape.gameObject.SetActive(false);
     }
 
 }

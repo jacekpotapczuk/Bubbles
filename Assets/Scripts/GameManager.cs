@@ -25,6 +25,12 @@ public class GameManager : MonoBehaviour
         var gameState = currentGameState.Update(this);
         if (gameState != currentGameState)
             currentGameState = gameState.Enter(this);
-        
+
+        // temporary, for easy testing
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            currentGameState = new TestTurnState();
+            currentGameState.Enter(this);
+        }   
     }
 }

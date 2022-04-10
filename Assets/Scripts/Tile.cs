@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -48,6 +47,15 @@ public class Tile : MonoBehaviour, INode
         SouthNeighbour = southNeighbour;
         WestNeighbour = westNeighbour;
         EastNeighbour = eastNeighbour;
+    }
+
+    public void CleanUp()
+    {
+        if(Shape != null)
+            Shape.Remove();
+        GScore = 0;
+        HScore = 0;
+        Parent = null;
     }
 
     public override string ToString()
