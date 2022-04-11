@@ -34,23 +34,13 @@ public class GameManager : MonoBehaviour
         set
         {
             score = value;
-
-            var toRemove = new List<BonusColor>();
-            foreach (var bonusColor in colorsToAdd)
-            {
-                if (bonusColor.scoreRequired <= score)
-                {
-                    colors.Add(bonusColor.color);
-                    toRemove.Add(bonusColor);
-                    Debug.Log("Add color");
-                }
-            }
-            foreach (var bs in toRemove)
-                colorsToAdd.Remove(bs);
-            
-            OnScoreGain?.Invoke(score);
+            scoreDirty = true;
         }
     }
+
+    // small optimization to avoid checking for new colors and firing event every time score is increased by one
+    // instead we do it later once
+    private bool scoreDirty; 
     private int score = 0;
     
     private void Start()
@@ -96,6 +86,8 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         var newState = currentGameState.Update();
+        if (scoreDirty)
+            UpdateScore();
         SwitchState(currentGameState, newState);
 
         // temporary, for easy testing
@@ -103,7 +95,26 @@ public class GameManager : MonoBehaviour
         {
             currentGameState = new TestTurnState(this);
             currentGameState.Enter();
-        }   
+        }
+    }
+
+    private void UpdateScore()
+    {
+        scoreDirty = false;
+        var toRemove = new List<BonusColor>();
+        foreach (var bonusColor in colorsToAdd)
+        {
+            if (bonusColor.scoreRequired <= score)
+            {
+                colors.Add(bonusColor.color);
+                toRemove.Add(bonusColor);
+                Debug.Log("Add color");
+            }
+        }
+        foreach (var bs in toRemove)
+            colorsToAdd.Remove(bs);
+            
+        OnScoreGain?.Invoke(score);
     }
     public Color GetRandomColor()
     {
