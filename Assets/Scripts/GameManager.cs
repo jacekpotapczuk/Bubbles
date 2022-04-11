@@ -5,8 +5,13 @@ using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
+
     [field: SerializeField, Range(3, 10)] public int BubblesToSpawnPerTurn { get; private set; } = 3;
     [field: SerializeField, Range(3, 9)] public int RequiredInARow { get; private set; } = 5;
+    
+    [SerializeField] private Color[] availableColors; 
+    
+    [SerializeField] private BonusColor[] bonusColors;
     
     [field: SerializeField]  public GameGrid Grid { get; private set; }
     [field: SerializeField] public CircleFactory CircleFactory {get; private set;}
@@ -14,6 +19,9 @@ public class GameManager : MonoBehaviour
     [field: SerializeField] public GameObject GameOverPanel {get; private set;}
 
     [SerializeField] private CircleIndicator circleIndicatorPrefab;
+
+    private List<Color> colors;
+    private List<BonusColor> colorsToAdd;
 
     public CircleIndicator[] CircleIndicators { get; private set; }
 
@@ -26,6 +34,20 @@ public class GameManager : MonoBehaviour
         set
         {
             score = value;
+
+            var toRemove = new List<BonusColor>();
+            foreach (var bonusColor in colorsToAdd)
+            {
+                if (bonusColor.scoreRequired <= score)
+                {
+                    colors.Add(bonusColor.color);
+                    toRemove.Add(bonusColor);
+                    Debug.Log("Add color");
+                }
+            }
+            foreach (var bs in toRemove)
+                colorsToAdd.Remove(bs);
+            
             OnScoreGain?.Invoke(score);
         }
     }
@@ -40,7 +62,6 @@ public class GameManager : MonoBehaviour
             CircleIndicators[i] = Instantiate(circleIndicatorPrefab, transform);
             CircleIndicators[i].transform.localScale = tile.transform.localScale;
         }
-        MoveCircleIndicators();
         RestartGame();
     }
 
@@ -52,7 +73,7 @@ public class GameManager : MonoBehaviour
         {
             // game over, but first spawn circle to fill screen before ending the game
             foreach(var tile in emptyTiles)
-                CircleFactory.SpawnAt(tile);
+                CircleFactory.SpawnAt(tile, GetRandomColor());
             SwitchState(currentGameState, new GameEndState(this));
             return;
         }
@@ -67,7 +88,7 @@ public class GameManager : MonoBehaviour
             usedTiles.Add(tile);
             
             CircleIndicators[i].Tile = tile;
-            CircleIndicators[i].Color = CircleFactory.GetRandomColor();
+            CircleIndicators[i].Color = GetRandomColor();
             CircleIndicators[i].transform.position = tile.transform.position;
         }
     }
@@ -84,9 +105,15 @@ public class GameManager : MonoBehaviour
             currentGameState.Enter();
         }   
     }
-    
+    public Color GetRandomColor()
+    {
+        return colors[Random.Range(0, colors.Count)];
+    }
+
     public void RestartGame()
     {
+        colors = new List<Color>(availableColors);
+        colorsToAdd = new List<BonusColor>(bonusColors);
         SwitchState(currentGameState, new GameStartState(this));
     }
 

@@ -12,11 +12,6 @@ public class CircleFactory : MonoBehaviour
     {
         factory = new ShapeFactory<Circle>(circlePrefab, transform);
     }
-
-    public void SpawnAt(Tile tile)
-    {
-        SpawnAt(tile, GetRandomColor());
-    }
     
     public void SpawnAt(Tile tile, Color color)
     {
@@ -36,10 +31,5 @@ public class CircleFactory : MonoBehaviour
     public void Remove(Circle circle)
     {
         factory.Reclaim(circle);
-    }
-    
-    public Color GetRandomColor()
-    {
-        return availableColors[Random.Range(0, availableColors.Length)];
     }
 }

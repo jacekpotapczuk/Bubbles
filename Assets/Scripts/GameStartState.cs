@@ -13,6 +13,7 @@ public class GameStartState : IGameState
     {
         gameManager.Grid.CleanUpTiles();
         gameManager.Score = 0;
+        gameManager.MoveCircleIndicators();
         return new PlayerTurnState(gameManager);
     }
 
