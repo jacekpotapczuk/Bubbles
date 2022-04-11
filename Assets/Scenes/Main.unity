@@ -648,14 +648,25 @@ MonoBehaviour:
   availableColors:
   - color: {r: 0.9716981, g: 0.33459416, b: 0.33459416, a: 1}
     scoreRequired: 0
-  - color: {r: 0.26610893, g: 0.61652905, b: 0.8679245, a: 0}
+    circleAbility: {fileID: 11400000, guid: 521e1dfdd879f4649b3b38f7d51af9f1, type: 2}
+    abilitySpawnChance: 0.1
+  - color: {r: 0.26610893, g: 0.61652905, b: 0.8679245, a: 1}
     scoreRequired: 0
-  - color: {r: 0.38900664, g: 0.8301887, b: 0.23104309, a: 0}
+    circleAbility: {fileID: 11400000, guid: 1808994a9d1eb384da18c1dcf84f09fd, type: 2}
+    abilitySpawnChance: 0.1
+  - color: {r: 0.38900664, g: 0.8301887, b: 0.23104309, a: 1}
     scoreRequired: 0
-  - color: {r: 0.83137256, g: 0.8003698, b: 0.23137257, a: 0}
-    scoreRequired: 5
+    circleAbility: {fileID: 11400000, guid: 9d8234c76521ab04e82ab33ad4a49571, type: 2}
+    abilitySpawnChance: 0.1
+  - color: {r: 0.880338, g: 0.9245283, b: 0.15263437, a: 1}
+    scoreRequired: 0
+    circleAbility: {fileID: 11400000, guid: 268676e35b739d042b0495e74d5946da, type: 2}
+    abilitySpawnChance: 0.1
   <Grid>k__BackingField: {fileID: 1525101743}
-  <CircleFactory>k__BackingField: {fileID: 1602869702}
+  circlePrefab: {fileID: 7402002592161967712, guid: c673949cdc56a254299b884369808ea2, type: 3}
+  statuePrefab: {fileID: 1656128264854279525, guid: ce4fd5a48486df342b85f84ca261da71, type: 3}
+  rainbowPrefab: {fileID: 8087545690053623155, guid: 750ac7de3f43b0f4383e3ede25e82b12, type: 3}
+  impPrefab: {fileID: 346374377802497598, guid: b229378bbbdd93f4391ab9eba70ff989, type: 3}
   <GameOverPanel>k__BackingField: {fileID: 1351591435}
   circleIndicatorPrefab: {fileID: 9146093710329915932, guid: 5f1433704bb793c4f840e04a33c2288c, type: 3}
 --- !u!4 &1064215266
@@ -1025,54 +1036,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1599130313}
   m_CullTransparentMesh: 1
---- !u!1 &1602869701
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1602869703}
-  - component: {fileID: 1602869702}
-  m_Layer: 0
-  m_Name: Circle Factory
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1602869702
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1602869701}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9b8bfc65488e5a43ae31b0f12bbe051, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  circlePrefab: {fileID: 7402002592161967712, guid: c673949cdc56a254299b884369808ea2, type: 3}
-  availableColors:
-  - {r: 0.90588236, g: 0.37254903, b: 0.37254903, a: 1}
-  - {r: 0.09411765, g: 0.49411765, b: 0.6784314, a: 1}
-  - {r: 0.4627451, g: 0.8980392, b: 0.48235294, a: 1}
---- !u!4 &1602869703
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1602869701}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1656615512
 GameObject:
   m_ObjectHideFlags: 0

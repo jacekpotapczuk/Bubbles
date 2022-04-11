@@ -3,20 +3,37 @@ using UnityEngine;
 
 public class Circle : Shape, IMovable
 {
-    [SerializeField] private SpriteRenderer spriteRenderer;
+    [Header("Settings")]
     [SerializeField, Range(3f, 15f), Tooltip("In tiles per second.")] private float movementSpeed = 5f;
     [SerializeField] private Color colorOffsetOnSelect;
-    public override Color Color
+    
+    [Header("References")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private SpriteRenderer abilityMark;
+
+    public override Color? Color
     {
         get => color;
         set
         {
             color = value;
-            spriteRenderer.color = color;
+            if(value != null)
+                spriteRenderer.color = color.Value;
         }
     }
 
-    public CircleFactory Factory
+    public CircleAbility Ability
+    {
+        get => ability;
+        set
+        {
+            ability = value;
+            abilityMark.enabled = value != null;
+        }
+    }
+
+    private CircleAbility ability;
+    public ShapeFactory<Circle> Factory
     {
         get => factory;
         set
@@ -30,8 +47,8 @@ public class Circle : Shape, IMovable
         }
     }
 
-    private CircleFactory factory;
-    private Color color;
+    private ShapeFactory<Circle> factory;
+    private Color? color;
     private AStarPathfinding aStarPathfinding;
     private bool selected;
 
@@ -53,10 +70,23 @@ public class Circle : Shape, IMovable
     public override void Remove()
     {
         Tile.Shape = null;
-        factory.Remove(this);
+        factory.Reclaim(this);
     }
-    
-    public override bool MatchColor(Color color)
+
+    public override void Clear()
+    {
+    }
+
+    public override void Die(GameManager gameManager)
+    {
+        Remove();
+        var ability = Ability;
+        Ability = null;
+        if(ability != null)
+            ability.Do(this, gameManager);
+    }
+
+    public override bool MatchColor(Color? color)
     {
         return this.color == color;
     }

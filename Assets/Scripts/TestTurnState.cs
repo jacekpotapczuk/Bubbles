@@ -26,12 +26,13 @@ public class TestTurnState : IGameState
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
         {
             Debug.Log("Spawn");
-            gameManager.CircleFactory.SpawnAt(currentTile, gameManager.GetRandomColor());
+            gameManager.SpawnCircle(currentTile);
             return this;
         }
         else if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
         {
-            gameManager.CircleFactory.RemoveAt(currentTile);
+            if(currentTile.Shape != null)
+                currentTile.Shape.Die(gameManager);
             return this;
         }
 

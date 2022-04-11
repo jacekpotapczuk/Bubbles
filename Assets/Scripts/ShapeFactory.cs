@@ -14,8 +14,13 @@ public class ShapeFactory<T> where T : Shape
         shapePool = new Stack<T>();
     }
 
-    public T SpawnAt(Tile tile)
+    public T SpawnAt(Tile tile, Color? color)
     {
+        if (tile == null)
+        {
+            Debug.LogError($"Can't spawn at null tile.");
+            return null;
+        }
         if (tile.Shape != null)
         {
             Debug.LogError($"Can't spawn {typeof(T)} at {tile}. Tile is occupied by {tile.Shape}.");
@@ -38,6 +43,8 @@ public class ShapeFactory<T> where T : Shape
         shape.transform.position = tile.transform.position;
         tile.Shape = shape;
         shape.Tile = tile;
+        shape.Color = color;
+        shape.Clear();
         return shape;
     }
 
