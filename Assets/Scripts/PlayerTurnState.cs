@@ -26,30 +26,19 @@ public class PlayerTurnState : IGameState
     
     public IGameState Enter()
     {
-        var emptyTiles = gameManager.Grid.GetEmptyTiles();
-        if (emptyTiles.Count <= gameManager.BubblesToSpawnPerTurn)
+        foreach (var circleIndicator in gameManager.CircleIndicators)
         {
-            // game over, but first spawn circle to fill screen before ending the game
-            foreach(var tile in emptyTiles)
-                gameManager.CircleFactory.SpawnAt(tile);
-            return new GameEndState(gameManager);
+            if(circleIndicator.Tile.Shape == null)
+                gameManager.CircleFactory.SpawnAt(circleIndicator.Tile, circleIndicator.Color);
         }
-
-        var checkPointTiles = new List<Tile>();
-        for (int i = 0; i < gameManager.BubblesToSpawnPerTurn; i++)
-        {
-            var tile = emptyTiles[Random.Range(0, emptyTiles.Count)];
-            gameManager.CircleFactory.SpawnAt(tile);
-            emptyTiles.Remove(tile);
-            checkPointTiles.Add(tile);
-        }
+        
         // do the point check after all shapes has been spawned
-        foreach (var tile in checkPointTiles)
+        foreach (var circleIndicator in gameManager.CircleIndicators)
         {
-            if(tile.Shape != null) // could be null when tile before removed this shapes after scoring 
-                CheckForPoints(tile.Shape);
+            if(circleIndicator.Tile.Shape != null) // could be null when tile before removed this shapes after scoring 
+                CheckForPoints(circleIndicator.Tile.Shape);
         }
-            
+        gameManager.MoveCircleIndicators();
         
         return this;
     }

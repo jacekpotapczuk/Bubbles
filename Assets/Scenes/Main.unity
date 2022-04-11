@@ -643,11 +643,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2bc8cfefe0b5c4398f882be7584c77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <BubblesToSpawnPerTurn>k__BackingField: 3
+  <BubblesToSpawnPerTurn>k__BackingField: 8
   <RequiredInARow>k__BackingField: 5
   <Grid>k__BackingField: {fileID: 1525101743}
   <CircleFactory>k__BackingField: {fileID: 1602869702}
   <GameOverPanel>k__BackingField: {fileID: 1351591435}
+  circleIndicatorPrefab: {fileID: 9146093710329915932, guid: 5f1433704bb793c4f840e04a33c2288c, type: 3}
 --- !u!4 &1064215266
 Transform:
   m_ObjectHideFlags: 0
@@ -1049,7 +1050,6 @@ MonoBehaviour:
   - {r: 0.90588236, g: 0.37254903, b: 0.37254903, a: 1}
   - {r: 0.09411765, g: 0.49411765, b: 0.6784314, a: 1}
   - {r: 0.4627451, g: 0.8980392, b: 0.48235294, a: 1}
-  - {r: 0.9622642, g: 0.87096345, b: 0.21333215, a: 1}
 --- !u!4 &1602869703
 Transform:
   m_ObjectHideFlags: 0

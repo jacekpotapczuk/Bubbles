@@ -15,12 +15,17 @@ public class CircleFactory : MonoBehaviour
 
     public void SpawnAt(Tile tile)
     {
+        SpawnAt(tile, GetRandomColor());
+    }
+    
+    public void SpawnAt(Tile tile, Color color)
+    {
         var circle = factory.SpawnAt(tile);
         if (circle == null)
             return;
         if(circle.Factory == null)
             circle.Factory = this;
-        circle.Color = availableColors[Random.Range(0, availableColors.Length)];
+        circle.Color = color;
     }
 
     public void RemoveAt(Tile tile)
@@ -31,5 +36,10 @@ public class CircleFactory : MonoBehaviour
     public void Remove(Circle circle)
     {
         factory.Reclaim(circle);
+    }
+    
+    public Color GetRandomColor()
+    {
+        return availableColors[Random.Range(0, availableColors.Length)];
     }
 }

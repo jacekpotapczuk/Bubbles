@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +13,9 @@ public class GameManager : MonoBehaviour
     
     [field: SerializeField] public GameObject GameOverPanel {get; private set;}
 
+    [SerializeField] private CircleIndicator circleIndicatorPrefab;
+
+    public CircleIndicator[] CircleIndicators { get; private set; }
 
     private IGameState currentGameState;
 
@@ -24,11 +29,47 @@ public class GameManager : MonoBehaviour
             OnScoreGain?.Invoke(score);
         }
     }
-
     private int score = 0;
+    
     private void Start()
     {
+        CircleIndicators = new CircleIndicator[BubblesToSpawnPerTurn];
+        var tile = Grid.GetTile(0, 0);
+        for (int i = 0; i < BubblesToSpawnPerTurn; i++)
+        {
+            CircleIndicators[i] = Instantiate(circleIndicatorPrefab, transform);
+            CircleIndicators[i].transform.localScale = tile.transform.localScale;
+        }
+        MoveCircleIndicators();
         RestartGame();
+    }
+
+    public void MoveCircleIndicators()
+    {
+        var emptyTiles = Grid.GetEmptyTiles();
+
+        if (emptyTiles.Count <= BubblesToSpawnPerTurn)
+        {
+            // game over, but first spawn circle to fill screen before ending the game
+            foreach(var tile in emptyTiles)
+                CircleFactory.SpawnAt(tile);
+            SwitchState(currentGameState, new GameEndState(this));
+            return;
+        }
+        var usedTiles = new List<Tile>();
+        for (int i = 0; i < BubblesToSpawnPerTurn; i++)
+        {
+            var tile = emptyTiles[Random.Range(0, emptyTiles.Count)];
+            while(usedTiles.Contains(tile))
+                tile = emptyTiles[Random.Range(0, emptyTiles.Count)];
+            
+            emptyTiles.Remove(tile);
+            usedTiles.Add(tile);
+            
+            CircleIndicators[i].Tile = tile;
+            CircleIndicators[i].Color = CircleFactory.GetRandomColor();
+            CircleIndicators[i].transform.position = tile.transform.position;
+        }
     }
 
     private void Update()
