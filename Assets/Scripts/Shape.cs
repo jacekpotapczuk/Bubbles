@@ -23,7 +23,7 @@ public abstract class Shape : MonoBehaviour
     {
     }
 
-    public virtual void Die(GameManager gameManager) // remove and optionally add bonus effects
+    public virtual void Die(GameManager gameManager) // remove and optionally add bonus effects like asigning points
     {
         Remove();
     }

@@ -614,6 +614,54 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &595962882
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 595962884}
+  - component: {fileID: 595962883}
+  m_Layer: 0
+  m_Name: Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &595962883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 595962882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 093fb1d5ac821054a953c759325fdf1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 1064215265}
+  circlePrefab: {fileID: 7402002592161967712, guid: c673949cdc56a254299b884369808ea2, type: 3}
+  statuePrefab: {fileID: 1656128264854279525, guid: ce4fd5a48486df342b85f84ca261da71, type: 3}
+  rainbowPrefab: {fileID: 8087545690053623155, guid: 750ac7de3f43b0f4383e3ede25e82b12, type: 3}
+  impPrefab: {fileID: 346374377802497598, guid: b229378bbbdd93f4391ab9eba70ff989, type: 3}
+--- !u!4 &595962884
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 595962882}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1064215266}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1064215264
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,7 +697,7 @@ MonoBehaviour:
   - color: {r: 0.9716981, g: 0.33459416, b: 0.33459416, a: 1}
     scoreRequired: 0
     circleAbility: {fileID: 11400000, guid: 521e1dfdd879f4649b3b38f7d51af9f1, type: 2}
-    abilitySpawnChance: 0.1
+    abilitySpawnChance: 0.5
   - color: {r: 0.26610893, g: 0.61652905, b: 0.8679245, a: 1}
     scoreRequired: 0
     circleAbility: {fileID: 11400000, guid: 1808994a9d1eb384da18c1dcf84f09fd, type: 2}
@@ -663,11 +711,8 @@ MonoBehaviour:
     circleAbility: {fileID: 11400000, guid: 268676e35b739d042b0495e74d5946da, type: 2}
     abilitySpawnChance: 0.1
   <Grid>k__BackingField: {fileID: 1525101743}
-  circlePrefab: {fileID: 7402002592161967712, guid: c673949cdc56a254299b884369808ea2, type: 3}
-  statuePrefab: {fileID: 1656128264854279525, guid: ce4fd5a48486df342b85f84ca261da71, type: 3}
-  rainbowPrefab: {fileID: 8087545690053623155, guid: 750ac7de3f43b0f4383e3ede25e82b12, type: 3}
-  impPrefab: {fileID: 346374377802497598, guid: b229378bbbdd93f4391ab9eba70ff989, type: 3}
   <GameOverPanel>k__BackingField: {fileID: 1351591435}
+  <Spawner>k__BackingField: {fileID: 595962883}
   circleIndicatorPrefab: {fileID: 9146093710329915932, guid: 5f1433704bb793c4f840e04a33c2288c, type: 3}
 --- !u!4 &1064215266
 Transform:
@@ -679,7 +724,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 595962884}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

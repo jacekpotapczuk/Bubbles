@@ -5,7 +5,6 @@ using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-
     [field: SerializeField, Range(3, 10)] public int BubblesToSpawnPerTurn { get; private set; } = 3;
     [field: SerializeField, Range(3, 9)] public int RequiredInARow { get; private set; } = 5;
     
@@ -13,12 +12,10 @@ public class GameManager : MonoBehaviour
 
     [field: SerializeField]  public GameGrid Grid { get; private set; }
     
-    [SerializeField] private Circle circlePrefab;
-    [SerializeField] private Statue statuePrefab;
-    [SerializeField] private Rainbow rainbowPrefab;
-    [SerializeField] private Imp impPrefab;
-    
     [field: SerializeField] public GameObject GameOverPanel {get; private set;}
+    
+    [field: SerializeField] public Spawner Spawner {get; private set;}
+
 
     [SerializeField] private CircleIndicator circleIndicatorPrefab;
 
@@ -26,15 +23,10 @@ public class GameManager : MonoBehaviour
     private List<GameColor> colorsToAdd;
 
     public CircleIndicator[] CircleIndicators { get; private set; }
-
-    public HashSet<Shape> Shapes { get; private set; }
+    
     
     private IGameState currentGameState;
-
-    private ShapeFactory<Circle> circleFactory;
-    private ShapeFactory<Statue> statueFactory;
-    private ShapeFactory<Rainbow> rainbowFactory;
-    private ShapeFactory<Imp> impFactory;
+    
 
     public static event Action<int> OnScoreGain; 
     public int Score
@@ -54,12 +46,6 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        Shapes = new HashSet<Shape>();
-        circleFactory = new ShapeFactory<Circle>(circlePrefab, transform);
-        statueFactory = new ShapeFactory<Statue>(statuePrefab, transform);
-        rainbowFactory = new ShapeFactory<Rainbow>(rainbowPrefab, transform);
-        impFactory = new ShapeFactory<Imp>(impPrefab, transform);
-        
         CircleIndicators = new CircleIndicator[BubblesToSpawnPerTurn];
         var tile = Grid.GetTile(0, 0);
         for (int i = 0; i < BubblesToSpawnPerTurn; i++)
@@ -68,46 +54,6 @@ public class GameManager : MonoBehaviour
             CircleIndicators[i].transform.localScale = tile.transform.localScale;
         }
         RestartGame();
-    }
-    
-    public void SpawnStatue(Tile tile)
-    {
-        Debug.Log("Spawn statue");
-        var shape = statueFactory.SpawnAt(tile, null);
-        shape.Factory ??= statueFactory;
-        Shapes.Add(shape);
-    }
-    
-    public void SpawnRainbow(Tile tile)
-    {
-        Debug.Log("Spawn rainbow");
-        var shape = rainbowFactory.SpawnAt(tile, null);
-        shape.Factory ??= rainbowFactory;
-        Shapes.Add(shape);
-    }
-    
-    public void SpawnImp(Tile tile)
-    {
-        Debug.Log("Spawn imp");
-        var shape = impFactory.SpawnAt(tile, null);
-        shape.Factory ??= impFactory;
-        Shapes.Add(shape);
-    }
-    
-    public void SpawnCircle(Tile tile)
-    {
-        SpawnCircle(tile, GetRandomColor());
-    }
-    
-    public void SpawnCircle(Tile tile, Color color)
-    {
-        var shape = circleFactory.SpawnAt(tile, color);
-        shape.Factory ??= circleFactory;
-        
-        var gameColor = ColorToGameColor(color);
-        var rand01 = Random.Range(0f, 1f);
-        shape.Ability =  rand01 <= gameColor.abilitySpawnChance ? gameColor.circleAbility : null;
-        Shapes.Add(shape);
     }
 
     public void MoveCircleIndicators()
@@ -118,7 +64,7 @@ public class GameManager : MonoBehaviour
         {
             // game over, but first spawn circle to fill screen before ending the game
             foreach (var tile in emptyTiles)
-                SpawnCircle(tile);
+                Spawner.SpawnCircle(tile);
             SwitchState(currentGameState, new GameEndState(this));
             return;
         }
@@ -170,12 +116,12 @@ public class GameManager : MonoBehaviour
             
         OnScoreGain?.Invoke(score);
     }
-    private Color GetRandomColor()
+    public Color GetRandomColor()
     {
         return colors[Random.Range(0, colors.Count)];
     }
 
-    private GameColor ColorToGameColor(Color color)
+    public GameColor ColorToGameColor(Color color)
     {
         foreach (var c in availableColors)
         {
@@ -228,7 +174,7 @@ public class GameManager : MonoBehaviour
         removeCurrent |= CheckWholeDirection(northEast, southWest); // second diagonal
         
         if (removeCurrent)
-            RemoveShapesAndAssignPoints(originShape);
+            originShape.Die(this);
     }
 
     // return true if points are scored
@@ -248,12 +194,6 @@ public class GameManager : MonoBehaviour
     private void RemoveShapesAndAssignPoints(List<Shape> shapes)
     {
         foreach (var shape in shapes)
-            RemoveShapesAndAssignPoints(shape);
-    }
-    
-    private void RemoveShapesAndAssignPoints(Shape shape)
-    {
-        shape.Die(this);
-        Score += 1;
+            shape.Die(this);
     }
 }

@@ -26,7 +26,7 @@ public class TestTurnState : IGameState
         if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
         {
             Debug.Log("Spawn");
-            gameManager.SpawnCircle(currentTile);
+            gameManager.Spawner.SpawnCircle(currentTile);
             return this;
         }
         else if (Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))

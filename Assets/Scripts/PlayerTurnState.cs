@@ -26,7 +26,7 @@ public class PlayerTurnState : IGameState
     
     public IGameState Enter()
     {
-        foreach (var shape in gameManager.Shapes)
+        foreach (var shape in gameManager.Spawner.Shapes)
         {
             if(shape.gameObject.activeSelf)
                 shape.OnNewTurn(gameManager);
@@ -35,7 +35,7 @@ public class PlayerTurnState : IGameState
         foreach (var circleIndicator in gameManager.CircleIndicators)
         {
             if(circleIndicator.Tile.Shape == null)
-                gameManager.SpawnCircle(circleIndicator.Tile, circleIndicator.Color);
+                gameManager.Spawner.SpawnCircle(circleIndicator.Tile, circleIndicator.Color);
         }
         
         // do the point check after all shapes has been spawned
@@ -82,9 +82,9 @@ public class PlayerTurnState : IGameState
             return this;
         
         if(Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
-            gameManager.SpawnStatue(currentTile);
+            gameManager.Spawner.SpawnStatue(currentTile);
         if(Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
-            gameManager.SpawnImp(currentTile);
+            gameManager.Spawner.SpawnImp(currentTile);
 
         if (!Input.GetMouseButtonDown(0)) 
             return this;

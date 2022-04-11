@@ -50,8 +50,8 @@ public class Circle : Shape, IMovable
     private ShapeFactory<Circle> factory;
     private Color? color;
     private AStarPathfinding aStarPathfinding;
-    private bool selected;
-
+    private bool triggeredDeathEffects = false;
+    
     private void Awake()
     {
         aStarPathfinding = new AStarPathfinding();
@@ -75,15 +75,22 @@ public class Circle : Shape, IMovable
 
     public override void Clear()
     {
+        triggeredDeathEffects = false;
     }
 
     public override void Die(GameManager gameManager)
     {
+        // make sure we don't die twice
+        if (triggeredDeathEffects)
+            return;
+        
+        gameManager.Score += 1;
+        triggeredDeathEffects = true;
         Remove();
-        var ability = Ability;
+        var circleAbility = Ability;
         Ability = null;
-        if(ability != null)
-            ability.Do(this, gameManager);
+        if(circleAbility != null)
+            circleAbility.Do(this, gameManager);
     }
 
     public override bool MatchColor(Color? color)
