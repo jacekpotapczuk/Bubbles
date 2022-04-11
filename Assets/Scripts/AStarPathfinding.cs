@@ -68,9 +68,11 @@ public class AStarPathfinding
             var newGScore = potentialParent.GScore + 1;
             if (newGScore < node.GScore)
             {
+                openList.Remove(node);
                 node.Parent = potentialParent;
                 node.GScore = newGScore;
                 node.HScore = GetManhattanDistance(node, endNode);
+                openList.Add(node);
             }
         }
         else

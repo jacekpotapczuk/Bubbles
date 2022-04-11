@@ -4,97 +4,109 @@ using UnityEngine;
 
 public class PlayerTurnState : IGameState
 {
+    // simple state machine inside state machine
+    // this one is much simpler and i don't expect this one to change that much
+    // so we simply use enum and stay inside one class
+    private enum TurnAction
+    {
+        Idle,
+        Moving,
+        Moved
+    }
+    
     private Shape selectedShape;
-    private Shape lastTryingToMoveShape; // shape that last moved (or at least tried to), used for score check
-
-    private bool moving = false;
-    private bool moved = false;
-
-    private GameManager gameManager;
+    private Shape tryingToMoveShape;
+    private TurnAction turnAction;
+    private readonly GameManager gameManager;
     public PlayerTurnState(GameManager gameManager)
     {
         this.gameManager = gameManager;
+        turnAction = TurnAction.Idle;
     }
     
     public IGameState Enter()
     {
-        Debug.Log("Player Turn state enter");
-        // "grow" feature circles
-        
+        var emptyTiles = gameManager.Grid.GetEmptyTiles();
+        if (emptyTiles.Count <= gameManager.BubblesToSpawnPerTurn)
+        {
+            // game over, but first spawn circle to fill screen before ending the game
+            foreach(var tile in emptyTiles)
+                gameManager.CircleFactory.SpawnAt(tile);
+            return new GameEndState(gameManager);
+        }
+
+        var checkPointTiles = new List<Tile>();
         for (int i = 0; i < gameManager.BubblesToSpawnPerTurn; i++)
         {
-            var tile = gameManager.Grid.GetRandomEmptyTile();
-            if (tile == null) // no empty spots left
-            {
-                var state = new GameStartState(gameManager);
-                state.Enter(); // todo: ogarnąć to, zeby bylo consistant
-                return state;
-            }
-                
+            var tile = emptyTiles[Random.Range(0, emptyTiles.Count)];
             gameManager.CircleFactory.SpawnAt(tile);
-            CheckForPoints(tile.Shape);
+            emptyTiles.Remove(tile);
+            checkPointTiles.Add(tile);
         }
+        // do the point check after all shapes has been spawned
+        foreach (var tile in checkPointTiles)
+        {
+            if(tile.Shape != null) // could be null when tile before removed this shapes after scoring 
+                CheckForPoints(tile.Shape);
+        }
+            
+        
         return this;
     }
 
     public IGameState Update()
     {
-        //Debug.Log("Player Turn state update");
-
         return HandleInput();
-      
-        // handle input
-        // exit when turn complete
-        // check for points5
-        // show feature circles
+    }
+
+    public void Exit()
+    {
     }
 
     private IGameState HandleInput()
     {
-        if (moving)
-            return this;
-        if (moved)
+        switch (turnAction)
         {
-            CheckForPoints(lastTryingToMoveShape);
-            return new PlayerTurnState(gameManager);
+            case TurnAction.Moving:
+                return this;
+            case TurnAction.Moved:
+                CheckForPoints(tryingToMoveShape); // here we know tryingToMoveShape actually moved
+                return new PlayerTurnState(gameManager);
+            case TurnAction.Idle:
+                return HandleIdle();
+            default:
+                Debug.LogError("Turn state not supported in HandeInput()");
+                return this;
         }
-            
+    }
+
+    private IGameState HandleIdle()
+    {
         var currentTile = gameManager.Grid.GetTile(Input.mousePosition);
         if (currentTile == null)
             return this;
+
+        if (!Input.GetMouseButtonDown(0)) 
+            return this;
         
-        if (Input.GetMouseButtonDown(0))
+        if (currentTile.Shape == null && selectedShape is IMovable movable)
         {
-            if (currentTile.Shape != null)
-            {
-                currentTile.Shape.Select();
-                
-                if(selectedShape != null)
-                    selectedShape.DeSelect();
-                selectedShape = currentTile.Shape;
-
-            }
-            else
-            {
-                if (selectedShape != null)
-                {
-                    selectedShape.DeSelect();
-                    selectedShape = null;
-                }
-            }
+            selectedShape.DeSelect();
+            tryingToMoveShape = selectedShape;
+            selectedShape = null;
+            TryMove(movable, gameManager, currentTile);    
         }
-        else if (Input.GetMouseButtonDown(1))
+        else if (currentTile.Shape != null)
         {
-            if (selectedShape == null)
-                return this;
-
-            if (selectedShape is IMovable movable)
-            {
+            currentTile.Shape.Select();
+            if(selectedShape != null)
                 selectedShape.DeSelect();
-                lastTryingToMoveShape = selectedShape;
-                selectedShape = null;
-                TryMove(movable, gameManager, currentTile);    
-            }
+            selectedShape = currentTile.Shape;
+        }
+        else if(currentTile.Shape == null && selectedShape != null)
+        {
+            selectedShape.DeSelect();
+            selectedShape = null;
         }
 
         return this;
@@ -102,13 +114,12 @@ public class PlayerTurnState : IGameState
 
     private async Task TryMove(IMovable movable, GameManager gameManager, Tile endTile)
     {
-        moving = true;
+        turnAction = TurnAction.Moving;
         var moveTask = movable.TryMoveTo(endTile, gameManager.Grid);
         while(!moveTask.IsCompleted)
             await Task.Yield();
         
-        moving = false;
-        moved = moveTask.Result;
+        turnAction = moveTask.Result ? TurnAction.Moved : TurnAction.Idle;
     }
 
     private void CheckForPoints(Shape originShape)
@@ -123,7 +134,6 @@ public class PlayerTurnState : IGameState
         var southEast = gameManager.Grid.GetMatchingShapesInDirection(originShape, 1, -1);
         
         bool removeCurrent = false;
-
         removeCurrent |= CheckWholeDirection(west, east);           // horizontal
         removeCurrent |= CheckWholeDirection(north, south);         // vertical
         removeCurrent |= CheckWholeDirection(northWest, southEast); // first diagonal
@@ -146,7 +156,6 @@ public class PlayerTurnState : IGameState
 
         return false;
     }
-    
 
     private void RemoveShapesAndAssignPoints(List<Shape> shapes)
     {
@@ -157,14 +166,6 @@ public class PlayerTurnState : IGameState
     private void RemoveShapesAndAssignPoints(Shape shape)
     {
         shape.Remove();
-        gameManager.AddOneToScore();
+        gameManager.Score += 1;
     }
-    
-
-    private bool MatchColor(Tile tile, Color color)
-    {
-        return tile != null && tile.Shape != null && tile.Shape.MatchColor(color);
-    }
-    
-    
 }

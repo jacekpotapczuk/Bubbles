@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GameStartState : IGameState
 {
-    private GameManager gameManager;
+    private readonly GameManager gameManager;
 
     public GameStartState(GameManager gameManager)
     {
@@ -11,14 +11,17 @@ public class GameStartState : IGameState
     
     public IGameState Enter()
     {
-        Debug.Log("Game Start State Enter");
         gameManager.Grid.CleanUpTiles();
-        gameManager.ResetScore();
+        gameManager.Score = 0;
         return new PlayerTurnState(gameManager);
     }
 
     public IGameState Update()
     {
         return new PlayerTurnState(gameManager);;
+    }
+
+    public void Exit()
+    {
     }
 }

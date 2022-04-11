@@ -5,7 +5,7 @@ public class Circle : Shape, IMovable
 {
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField, Range(3f, 15f), Tooltip("In tiles per second.")] private float movementSpeed = 5f;
-
+    [SerializeField] private Color colorOffsetOnSelect;
     public override Color Color
     {
         get => color;
@@ -42,14 +42,12 @@ public class Circle : Shape, IMovable
 
     public override void Select()
     {
-        Debug.Log("Circle selected");
-        Color = color - new Color(0.35f, 0.35f, 0.35f, 0f);
+        Color = color - colorOffsetOnSelect;
     }
 
     public override void DeSelect()
     {
-        Debug.Log("Circle deselected");
-        Color = color + new Color(0.35f, 0.35f, 0.35f, 0f);
+        Color = color + colorOffsetOnSelect;
     }
 
     public override void Remove()
@@ -88,9 +86,8 @@ public class Circle : Shape, IMovable
 
     }
 
-    public async Task<bool> TryMoveTo(Tile endTile, GameGrid grid) // return false if move is not possible, else true
+    public async Task<bool> TryMoveTo(Tile endTile, GameGrid grid)
     {
-        Debug.Log($"Move {Tile} -> {endTile}");
         var nodePath = aStarPathfinding.GetPath(Tile, endTile);
         if (nodePath == null)
             return false;

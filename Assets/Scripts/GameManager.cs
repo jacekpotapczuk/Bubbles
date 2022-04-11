@@ -1,5 +1,4 @@
 using System;
-using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -9,41 +8,61 @@ public class GameManager : MonoBehaviour
     
     [field: SerializeField]  public GameGrid Grid { get; private set; }
     [field: SerializeField] public CircleFactory CircleFactory {get; private set;}
-    [SerializeField] public TMP_Text scoreText;
     
+    [field: SerializeField] public GameObject GameOverPanel {get; private set;}
+
+
     private IGameState currentGameState;
+
+    public static event Action<int> OnScoreGain; 
+    public int Score
+    {
+        get => score;
+        set
+        {
+            score = value;
+            OnScoreGain?.Invoke(score);
+        }
+    }
+
     private int score = 0;
     private void Start()
     {
-        currentGameState = new GameStartState(this);
-        var gameState  = currentGameState.Enter();
-        if (gameState != currentGameState)
-            currentGameState = gameState.Enter();
+        RestartGame();
     }
 
     private void Update()
     {
-        var gameState = currentGameState.Update();
-        if (gameState != currentGameState)
-            currentGameState = gameState.Enter();
+        var newState = currentGameState.Update();
+        SwitchState(currentGameState, newState);
 
         // temporary, for easy testing
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             currentGameState = new TestTurnState(this);
             currentGameState.Enter();
         }   
     }
-
-    public void AddOneToScore()
+    
+    public void RestartGame()
     {
-        score += 1;
-        scoreText.text = score.ToString();
+        SwitchState(currentGameState, new GameStartState(this));
     }
 
-    public void ResetScore()
+    private void SwitchState(IGameState prev, IGameState newState)
     {
-        score = 0;
-        scoreText.text = score.ToString();
+        if (prev == newState)
+            return;
+        if (newState == null)
+        {
+            Debug.LogError("Not possible to change state to null");
+            return;
+        }
+        currentGameState = newState;
+        prev?.Exit();
+        // I kinda don't like this, with more time I would consider some changes to pattern
+        // this makes it too easy to make accidentally infinite loop in more complex situation
+        var newNewState = newState.Enter(); 
+        SwitchState(newState, newNewState);
     }
 }

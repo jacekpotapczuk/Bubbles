@@ -128,3 +128,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 7968860503179739730}
   movementSpeed: 10
+  colorOffsetOnSelect: {r: 0.3529412, g: 0.3529412, b: 0.3529412, a: 0}

@@ -42,7 +42,7 @@ public class GameGrid : MonoBehaviour
         return null;
     }
     
-    public Tile GetRandomEmptyTile()
+    public List<Tile> GetEmptyTiles()
     {
         var emptyTiles = new List<Tile>();
         
@@ -54,9 +54,8 @@ public class GameGrid : MonoBehaviour
                     emptyTiles.Add(tiles[x, y]);
             }
         }
-        if (emptyTiles.Count == 0)
-            return null;
-        return emptyTiles[Random.Range(0, emptyTiles.Count)];
+
+        return emptyTiles;
     }
 
     public void CleanUpTiles()
@@ -184,10 +183,7 @@ public class GameGrid : MonoBehaviour
         {
             for (var x = 0; x < gridSize; x++)
             {
-                if (tiles[x, y].IsWalkable)
-                    tiles[x, y].GetComponentInChildren<SpriteRenderer>().color = Color.green;
-                else
-                    tiles[x, y].GetComponentInChildren<SpriteRenderer>().color = Color.red;
+                tiles[x, y].GetComponentInChildren<SpriteRenderer>().color = tiles[x, y].IsWalkable ? Color.green : Color.red;
             }
         }
     }

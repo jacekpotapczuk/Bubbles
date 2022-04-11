@@ -3,7 +3,7 @@ using UnityEngine;
 public class TestTurnState : IGameState
 {
     private Shape selectedShape;
-    private GameManager gameManager;
+    private readonly GameManager gameManager;
 
     public TestTurnState(GameManager gameManager)
     {
@@ -69,5 +69,9 @@ public class TestTurnState : IGameState
         }
 
         return this;
+    }
+
+    public void Exit()
+    {
     }
 }
