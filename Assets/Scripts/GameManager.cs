@@ -9,10 +9,8 @@ public class GameManager : MonoBehaviour
     [field: SerializeField, Range(3, 10)] public int BubblesToSpawnPerTurn { get; private set; } = 3;
     [field: SerializeField, Range(3, 9)] public int RequiredInARow { get; private set; } = 5;
     
-    [SerializeField] private Color[] availableColors; 
-    
-    [SerializeField] private BonusColor[] bonusColors;
-    
+    [SerializeField] private GameColor[] availableColors;
+
     [field: SerializeField]  public GameGrid Grid { get; private set; }
     [field: SerializeField] public CircleFactory CircleFactory {get; private set;}
     
@@ -21,7 +19,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private CircleIndicator circleIndicatorPrefab;
 
     private List<Color> colors;
-    private List<BonusColor> colorsToAdd;
+    private List<GameColor> colorsToAdd;
 
     public CircleIndicator[] CircleIndicators { get; private set; }
 
@@ -98,21 +96,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void UpdateScore()
+    public void UpdateScore()
     {
         scoreDirty = false;
-        var toRemove = new List<BonusColor>();
-        foreach (var bonusColor in colorsToAdd)
+        var toRemove = new List<GameColor>();
+        foreach (var color in colorsToAdd)
         {
-            if (bonusColor.scoreRequired <= score)
+            if (color.scoreRequired <= score)
             {
-                colors.Add(bonusColor.color);
-                toRemove.Add(bonusColor);
-                Debug.Log("Add color");
+                colors.Add(color.color);
+                toRemove.Add(color);
             }
         }
-        foreach (var bs in toRemove)
-            colorsToAdd.Remove(bs);
+        foreach (var gameColor in toRemove)
+            colorsToAdd.Remove(gameColor);
             
         OnScoreGain?.Invoke(score);
     }
@@ -123,8 +120,8 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        colors = new List<Color>(availableColors);
-        colorsToAdd = new List<BonusColor>(bonusColors);
+        colors = new List<Color>();
+        colorsToAdd = new List<GameColor>(availableColors);
         SwitchState(currentGameState, new GameStartState(this));
     }
 
