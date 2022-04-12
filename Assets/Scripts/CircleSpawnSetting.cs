@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public struct GameColor
+public struct CircleSpawnSetting
 {
     public Color color;
     public int scoreRequired;

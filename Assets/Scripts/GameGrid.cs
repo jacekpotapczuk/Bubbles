@@ -22,6 +22,11 @@ public class GameGrid : MonoBehaviour
         InitializeGrid();
     }
     
+    public Tile GetTileInDirection(Tile origin, int dirX, int dirY)
+    {
+        return GetTile(origin.X + dirX, origin.Y + dirY); 
+    }
+    
     public Tile GetTile(Vector3 screenPosition)
     {
         var worldPos = mainCamera.ScreenToWorldPoint(screenPosition);

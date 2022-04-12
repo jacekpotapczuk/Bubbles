@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     [field: SerializeField, Range(3, 10)] public int BubblesToSpawnPerTurn { get; private set; } = 3;
     [field: SerializeField, Range(3, 9)] public int RequiredInARow { get; private set; } = 5;
     
-    [SerializeField] private GameColor[] availableColors;
+    [SerializeField] private CircleSpawnSetting[] availableColors;
 
     [field: SerializeField]  public GameGrid Grid { get; private set; }
     
@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private CircleIndicator circleIndicatorPrefab;
 
     private List<Color> colors;
-    private List<GameColor> colorsToAdd;
+    private List<CircleSpawnSetting> colorsToAdd;
 
     public CircleIndicator[] CircleIndicators { get; private set; }
     
@@ -54,6 +54,20 @@ public class GameManager : MonoBehaviour
             CircleIndicators[i].transform.localScale = tile.transform.localScale;
         }
         RestartGame();
+    }
+
+    // I don't like this kind of code, but I'm over the time already so I want to finish ASAP
+    // and also it's hard to do it better, because there is a lot of edge cases that u need to care about
+    public int ReaperTargets { get; private set; } 
+
+    public void RequestReaperState(int targetsToKill)
+    {
+        ReaperTargets += targetsToKill;
+    }
+
+    public void ResetReaperTargets()
+    {
+        ReaperTargets = 0;
     }
 
     public void MoveCircleIndicators()
@@ -97,12 +111,22 @@ public class GameManager : MonoBehaviour
             currentGameState = new TestTurnState(this);
             currentGameState.Enter();
         }
+
+        // if (Input.GetKeyDown(KeyCode.O))
+        // {
+        //     foreach (var shape in Spawner.Shapes)
+        //     {
+        //         if (shape is Circle c)
+        //             c.Blocked = true;
+        //     }    
+        // }
+        
     }
 
     public void UpdateScore()
     {
         scoreDirty = false;
-        var toRemove = new List<GameColor>();
+        var toRemove = new List<CircleSpawnSetting>();
         foreach (var color in colorsToAdd)
         {
             if (color.scoreRequired <= score)
@@ -121,7 +145,7 @@ public class GameManager : MonoBehaviour
         return colors[Random.Range(0, colors.Count)];
     }
 
-    public GameColor ColorToGameColor(Color color)
+    public CircleSpawnSetting ColorToGameColor(Color color)
     {
         foreach (var c in availableColors)
         {
@@ -129,13 +153,13 @@ public class GameManager : MonoBehaviour
                 return c;
         }
         Debug.LogError($"Could not find Circle Ability for color {color}");
-        return new GameColor();
+        return new CircleSpawnSetting();
     }
 
     public void RestartGame()
     {
         colors = new List<Color>();
-        colorsToAdd = new List<GameColor>(availableColors);
+        colorsToAdd = new List<CircleSpawnSetting>(availableColors);
         SwitchState(currentGameState, new GameStartState(this));
     }
 

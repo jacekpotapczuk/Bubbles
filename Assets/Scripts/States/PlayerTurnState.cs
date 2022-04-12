@@ -17,6 +17,7 @@ public class PlayerTurnState : IGameState
     private Shape selectedShape;
     private Shape tryingToMoveShape;
     private TurnAction turnAction;
+    private bool anyCircleCanMove = false;
     private readonly GameManager gameManager;
     public PlayerTurnState(GameManager gameManager)
     {
@@ -31,13 +32,12 @@ public class PlayerTurnState : IGameState
             if(shape.gameObject.activeSelf)
                 shape.OnNewTurn(gameManager);
         }
-        
         foreach (var circleIndicator in gameManager.CircleIndicators)
         {
             if(circleIndicator.Tile.Shape == null)
                 gameManager.Spawner.SpawnCircle(circleIndicator.Tile, circleIndicator.Color);
         }
-        
+
         // do the point check after all shapes has been spawned
         foreach (var circleIndicator in gameManager.CircleIndicators)
         {
@@ -45,12 +45,18 @@ public class PlayerTurnState : IGameState
                 gameManager.CheckForPoints(circleIndicator.Tile.Shape);
         }
         gameManager.MoveCircleIndicators();
-        
+
         return this;
     }
 
     public IGameState Update()
     {
+        if (!AnyCircleCanMove())
+        {
+            Debug.Log("No moves available, move to next turn");
+            return new PlayerTurnState(gameManager);
+        }
+        
         return HandleInput();
     }
 
@@ -66,7 +72,10 @@ public class PlayerTurnState : IGameState
                 return this;
             case TurnAction.Moved:
                 gameManager.CheckForPoints(tryingToMoveShape); // here we know tryingToMoveShape actually moved
-                return new PlayerTurnState(gameManager);
+                if(gameManager.ReaperTargets > 0)          
+                    return new ReaperState(gameManager, gameManager.ReaperTargets);
+                else
+                    return new PlayerTurnState(gameManager);
             case TurnAction.Idle:
                 return HandleIdle();
             default:
@@ -80,11 +89,6 @@ public class PlayerTurnState : IGameState
         var currentTile = gameManager.Grid.GetTile(Input.mousePosition);
         if (currentTile == null)
             return this;
-        
-        if(Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(0))
-            gameManager.Spawner.SpawnStatue(currentTile);
-        if(Input.GetKey(KeyCode.LeftShift) && Input.GetMouseButtonDown(1))
-            gameManager.Spawner.SpawnImp(currentTile);
 
         if (!Input.GetMouseButtonDown(0)) 
             return this;
@@ -120,5 +124,49 @@ public class PlayerTurnState : IGameState
             await Task.Yield();
         
         turnAction = moveTask.Result ? TurnAction.Moved : TurnAction.Idle;
+    }
+
+    private bool AnyCircleCanMove()
+    {
+        if (anyCircleCanMove)
+            return true;
+        foreach (var shape in gameManager.Spawner.Shapes)
+        {
+            if (!shape.gameObject.activeSelf)
+                continue;
+            if (!(shape is Circle circle)) 
+                continue;
+            if (circle.Blocked)
+                continue;
+            if (circle == null)
+                continue;
+            if (circle.Tile.NorthNeighbour != null && circle.Tile.NorthNeighbour.Shape == null)
+            {
+                Debug.Log($"Any cirecle: {circle.Tile.NorthNeighbour}");
+                anyCircleCanMove = true;
+                return true;
+            }
+            if (circle.Tile.SouthNeighbour != null && circle.Tile.SouthNeighbour.Shape == null)
+            {
+                Debug.Log($"Any cirecle: {circle.Tile.SouthNeighbour}");
+                anyCircleCanMove = true;
+                return true;
+            }
+            if (circle.Tile.WestNeighbour != null && circle.Tile.WestNeighbour.Shape == null)
+            {
+                Debug.Log($"Any cirecle: {circle.Tile.WestNeighbour}");
+                anyCircleCanMove = true;
+                return true;
+            }
+
+            if (circle.Tile.EastNeighbour != null && circle.Tile.EastNeighbour.Shape == null)
+            {
+                Debug.Log($"Any cirecle: {circle.Tile.EastNeighbour}");
+                anyCircleCanMove = true;
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -10,6 +10,7 @@ public class Circle : Shape, IMovable
     [Header("References")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private SpriteRenderer abilityMark;
+    [SerializeField] private SpriteRenderer blockMark;
 
     public override Color? Color
     {
@@ -31,8 +32,19 @@ public class Circle : Shape, IMovable
             abilityMark.enabled = value != null;
         }
     }
-
     private CircleAbility ability;
+    
+    public bool Blocked
+    {
+        get => blocked;
+        private set
+        {
+            blocked = value;
+            blockMark.enabled = value;
+        }
+    }
+
+    private bool blocked;
     public ShapeFactory<Circle> Factory
     {
         get => factory;
@@ -51,10 +63,30 @@ public class Circle : Shape, IMovable
     private Color? color;
     private AStarPathfinding aStarPathfinding;
     private bool triggeredDeathEffects = false;
+    private int blockDuration;
     
     private void Awake()
     {
         aStarPathfinding = new AStarPathfinding();
+    }
+
+    public void BlockFor(int numberOfTurns)
+    {
+        blockDuration += numberOfTurns;
+        if (blockDuration > 0)
+            Blocked = true;
+    }
+
+    public override void OnNewTurn(GameManager gameManager)
+    {
+        if (!blocked)
+            return;
+        blockDuration -= 1;
+        if (blockDuration < 0)
+        {
+            Blocked = false;
+            blockDuration = 0;
+        }
     }
 
     public override void Select()
@@ -70,6 +102,8 @@ public class Circle : Shape, IMovable
     public override void Remove()
     {
         Tile.Shape = null;
+        Ability = null;
+        Blocked = false;
         factory.Reclaim(this);
     }
 
@@ -86,9 +120,9 @@ public class Circle : Shape, IMovable
         
         gameManager.Score += 1;
         triggeredDeathEffects = true;
-        Remove();
         var circleAbility = Ability;
-        Ability = null;
+        Remove();
+
         if(circleAbility != null)
             circleAbility.Do(this, gameManager);
     }
@@ -120,11 +154,12 @@ public class Circle : Shape, IMovable
         }
 
         transform.position = tile2.transform.position;
-
     }
 
     public async Task<bool> TryMoveTo(Tile endTile, GameGrid grid)
     {
+        if (blocked)
+            return false;
         var nodePath = aStarPathfinding.GetPath(Tile, endTile);
         if (nodePath == null)
             return false;
