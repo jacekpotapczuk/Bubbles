@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class AStarPathfinding
 {
-
     private SortedSet<INode> openList;
     private HashSet<INode> closedList;
     private INode endNode;

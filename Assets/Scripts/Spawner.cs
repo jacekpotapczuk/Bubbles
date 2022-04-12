@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -31,7 +30,6 @@ public class Spawner : MonoBehaviour
     
     public void SpawnStatue(Tile tile)
     {
-        Debug.Log("Spawn statue");
         var shape = statueFactory.SpawnAt(tile, null);
         shape.Factory ??= statueFactory;
         Shapes.Add(shape);
@@ -39,7 +37,6 @@ public class Spawner : MonoBehaviour
     
     public void SpawnRainbow(Tile tile)
     {
-        Debug.Log("Spawn rainbow");
         var shape = rainbowFactory.SpawnAt(tile, null);
         shape.Factory ??= rainbowFactory;
         Shapes.Add(shape);
@@ -47,7 +44,6 @@ public class Spawner : MonoBehaviour
     
     public void SpawnImp(Tile tile)
     {
-        Debug.Log("Spawn imp");
         var shape = impFactory.SpawnAt(tile, null);
         shape.Factory ??= impFactory;
         Shapes.Add(shape);

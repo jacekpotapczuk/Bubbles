@@ -3,8 +3,9 @@ using UnityEngine;
 public class CircleIndicator : MonoBehaviour
 {
    [SerializeField] private SpriteRenderer spriteRenderer;
-   private Color color;
-
+   
+   public Tile Tile { get; set; }
+   
    public Color Color
    {
       get => color;
@@ -14,6 +15,5 @@ public class CircleIndicator : MonoBehaviour
          spriteRenderer.color = value;
       }
    }
-   
-   public Tile Tile { get; set; }
+   private Color color;
 }

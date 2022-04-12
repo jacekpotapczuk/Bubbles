@@ -5,30 +5,22 @@ using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-    [field: SerializeField, Range(3, 10)] public int BubblesToSpawnPerTurn { get; private set; } = 3;
-    [field: SerializeField, Range(3, 9)] public int RequiredInARow { get; private set; } = 5;
-    
+    [Header("Settings")]
+    [SerializeField, Range(3, 10)] private int bubblesToSpawnPerTurn = 3;
+    [SerializeField, Range(3, 9)] private int requiredInARow = 5;
     [SerializeField] private CircleSpawnSetting[] availableColors;
 
-    [field: SerializeField]  public GameGrid Grid { get; private set; }
-    
-    [field: SerializeField] public GameObject GameOverPanel {get; private set;}
-    
-    [field: SerializeField] public Spawner Spawner {get; private set;}
-
-
+    [Header("References")]
     [SerializeField] private CircleIndicator circleIndicatorPrefab;
-
-    private List<Color> colors;
-    private List<CircleSpawnSetting> colorsToAdd;
-
+    
+    [field: SerializeField]  public GameGrid Grid { get; private set; }
+    [field: SerializeField] public GameObject GameOverPanel {get; private set;}
+    [field: SerializeField] public Spawner Spawner {get; private set;}
+    
     public CircleIndicator[] CircleIndicators { get; private set; }
     
+    public int ReaperTargets { get; private set; } 
     
-    private IGameState currentGameState;
-    
-
-    public static event Action<int> OnScoreGain; 
     public int Score
     {
         get => score;
@@ -38,7 +30,13 @@ public class GameManager : MonoBehaviour
             scoreDirty = true;
         }
     }
-
+    
+    public static event Action<int> OnScoreGain; 
+    
+    private List<Color> colors;
+    private List<CircleSpawnSetting> colorsToAdd;
+    private IGameState currentGameState;
+    
     // small optimization to avoid checking for new colors and firing event every time score is increased by one
     // instead we do it later once
     private bool scoreDirty; 
@@ -46,35 +44,29 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        CircleIndicators = new CircleIndicator[BubblesToSpawnPerTurn];
+        CircleIndicators = new CircleIndicator[bubblesToSpawnPerTurn];
         var tile = Grid.GetTile(0, 0);
-        for (int i = 0; i < BubblesToSpawnPerTurn; i++)
+        for (int i = 0; i < bubblesToSpawnPerTurn; i++)
         {
             CircleIndicators[i] = Instantiate(circleIndicatorPrefab, transform);
             CircleIndicators[i].transform.localScale = tile.transform.localScale;
         }
         RestartGame();
     }
-
-    // I don't like this kind of code, but I'm over the time already so I want to finish ASAP
-    // and also it's hard to do it better, because there is a lot of edge cases that u need to care about
-    public int ReaperTargets { get; private set; } 
-
-    public void RequestReaperState(int targetsToKill)
+    
+    private void Update()
     {
-        ReaperTargets += targetsToKill;
+        var newState = currentGameState.Update();
+        if (scoreDirty)
+            UpdateScore();
+        SwitchState(currentGameState, newState);
     }
-
-    public void ResetReaperTargets()
-    {
-        ReaperTargets = 0;
-    }
-
+    
     public void MoveCircleIndicators()
     {
         var emptyTiles = Grid.GetEmptyTiles();
 
-        if (emptyTiles.Count <= BubblesToSpawnPerTurn)
+        if (emptyTiles.Count <= bubblesToSpawnPerTurn)
         {
             // game over, but first spawn circle to fill screen before ending the game
             foreach (var tile in emptyTiles)
@@ -83,7 +75,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         var usedTiles = new List<Tile>();
-        for (int i = 0; i < BubblesToSpawnPerTurn; i++)
+        for (int i = 0; i < bubblesToSpawnPerTurn; i++)
         {
             var tile = emptyTiles[Random.Range(0, emptyTiles.Count)];
             while(usedTiles.Contains(tile))
@@ -96,31 +88,6 @@ public class GameManager : MonoBehaviour
             CircleIndicators[i].Color = GetRandomColor();
             CircleIndicators[i].transform.position = tile.transform.position;
         }
-    }
-
-    private void Update()
-    {
-        var newState = currentGameState.Update();
-        if (scoreDirty)
-            UpdateScore();
-        SwitchState(currentGameState, newState);
-
-        // temporary, for easy testing
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            currentGameState = new TestTurnState(this);
-            currentGameState.Enter();
-        }
-
-        // if (Input.GetKeyDown(KeyCode.O))
-        // {
-        //     foreach (var shape in Spawner.Shapes)
-        //     {
-        //         if (shape is Circle c)
-        //             c.Blocked = true;
-        //     }    
-        // }
-        
     }
 
     public void UpdateScore()
@@ -140,6 +107,7 @@ public class GameManager : MonoBehaviour
             
         OnScoreGain?.Invoke(score);
     }
+    
     public Color GetRandomColor()
     {
         return colors[Random.Range(0, colors.Count)];
@@ -161,23 +129,6 @@ public class GameManager : MonoBehaviour
         colors = new List<Color>();
         colorsToAdd = new List<CircleSpawnSetting>(availableColors);
         SwitchState(currentGameState, new GameStartState(this));
-    }
-
-    private void SwitchState(IGameState prev, IGameState newState)
-    {
-        if (prev == newState)
-            return;
-        if (newState == null)
-        {
-            Debug.LogError("Not possible to change state to null");
-            return;
-        }
-        currentGameState = newState;
-        prev?.Exit();
-        // I kinda don't like this, with more time I would consider some changes to pattern
-        // this makes it too easy to make accidentally infinite loop in more complex situation
-        var newNewState = newState.Enter(); 
-        SwitchState(newState, newNewState);
     }
     
     public void CheckForPoints(Shape originShape)
@@ -201,11 +152,40 @@ public class GameManager : MonoBehaviour
             originShape.Die(this);
     }
 
+    // I don't like this kind of code, but I'm over the time already so I want to finish ASAP
+    // and also it's hard to do it better, because there is a lot of edge cases that u need to care about
+    public void RequestReaperState(int targetsToKill)
+    {
+        ReaperTargets += targetsToKill;
+    }
+
+    public void ResetReaperTargets()
+    {
+        ReaperTargets = 0;
+    }
+
+    private void SwitchState(IGameState prev, IGameState newState)
+    {
+        if (prev == newState)
+            return;
+        if (newState == null)
+        {
+            Debug.LogError("Not possible to change state to null");
+            return;
+        }
+        currentGameState = newState;
+        prev?.Exit();
+        // I kinda don't like this, with more time I would consider some changes to pattern
+        // this makes it too easy to make accidentally infinite loop in more complex situation
+        var newNewState = newState.Enter(); 
+        SwitchState(newState, newNewState);
+    }
+    
     // return true if points are scored
     private bool CheckWholeDirection(List<Shape> dirPart1, List<Shape> dirPart2)
     {
         var count = dirPart1.Count + dirPart2.Count + 1; // add one, because we don't have mid tile in lists
-        if (count >= RequiredInARow)
+        if (count >= requiredInARow)
         {
             RemoveShapesAndAssignPoints(dirPart1);
             RemoveShapesAndAssignPoints(dirPart2);

@@ -3,6 +3,9 @@ using UnityEngine;
 public class Statue : Shape
 {
     [SerializeField, Range(2, 10)] private int dieAfterTurns = 5; 
+    
+    public override Color? Color { get; set; } = null;
+    
     public ShapeFactory<Statue> Factory
     {
         get => factory;
@@ -16,12 +19,10 @@ public class Statue : Shape
             Debug.LogError("Factory already has been assigned. You shouldn't change it.");
         }
     }
-
-    private int turnsAlive;
-
     private ShapeFactory<Statue> factory;
     
-    public override Color? Color { get; set; } = null;
+    private int turnsAlive;
+    
     public override bool MatchColor(Color? color)
     {
         return false;

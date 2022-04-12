@@ -43,8 +43,8 @@ public class Circle : Shape, IMovable
             blockMark.enabled = value;
         }
     }
-
     private bool blocked;
+    
     public ShapeFactory<Circle> Factory
     {
         get => factory;
@@ -58,8 +58,8 @@ public class Circle : Shape, IMovable
             Debug.LogError("Factory already has been assigned. You shouldn't change it.");
         }
     }
-
     private ShapeFactory<Circle> factory;
+    
     private Color? color;
     private AStarPathfinding aStarPathfinding;
     private bool triggeredDeathEffects = false;
@@ -68,13 +68,6 @@ public class Circle : Shape, IMovable
     private void Awake()
     {
         aStarPathfinding = new AStarPathfinding();
-    }
-
-    public void BlockFor(int numberOfTurns)
-    {
-        blockDuration += numberOfTurns;
-        if (blockDuration > 0)
-            Blocked = true;
     }
 
     public override void OnNewTurn(GameManager gameManager)
@@ -131,6 +124,29 @@ public class Circle : Shape, IMovable
     {
         return this.color == color;
     }
+    
+    public async Task<bool> TryMoveTo(Tile endTile, GameGrid grid)
+    {
+        if (blocked)
+            return false;
+        var nodePath = aStarPathfinding.GetPath(Tile, endTile);
+        if (nodePath == null)
+            return false;
+        
+        var tilePath = new Tile[nodePath.Count];
+        for (var i = 0; i < nodePath.Count; i++)
+            tilePath[i] = grid.GetTile(nodePath[i].X, nodePath[i].Y);
+        
+        await MoveAlong(tilePath);
+        return true;
+    }
+    
+    public void BlockFor(int numberOfTurns)
+    {
+        blockDuration += numberOfTurns;
+        if (blockDuration > 0)
+            Blocked = true;
+    }
 
     private async Task MoveAlong(Tile[] tiles)
     {
@@ -154,21 +170,5 @@ public class Circle : Shape, IMovable
         }
 
         transform.position = tile2.transform.position;
-    }
-
-    public async Task<bool> TryMoveTo(Tile endTile, GameGrid grid)
-    {
-        if (blocked)
-            return false;
-        var nodePath = aStarPathfinding.GetPath(Tile, endTile);
-        if (nodePath == null)
-            return false;
-        
-        var tilePath = new Tile[nodePath.Count];
-        for (var i = 0; i < nodePath.Count; i++)
-            tilePath[i] = grid.GetTile(nodePath[i].X, nodePath[i].Y);
-        
-        await MoveAlong(tilePath);
-        return true;
     }
 }

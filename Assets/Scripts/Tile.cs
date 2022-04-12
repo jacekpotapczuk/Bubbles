@@ -22,7 +22,6 @@ public class Tile : MonoBehaviour, INode
     public INode Parent { get; set; }
 
     public bool IsWalkable => Shape == null;
-
     
     public List<INode> GetNeighbours()
     {
@@ -37,7 +36,6 @@ public class Tile : MonoBehaviour, INode
             neighbours.Add(EastNeighbour);
         return neighbours;
     }
-    
 
     public void Initialize(int x, int y, Tile northNeighbour, Tile southNeighbour, Tile westNeighbour, Tile eastNeighbour)
     {

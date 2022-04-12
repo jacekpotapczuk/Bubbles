@@ -728,8 +728,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2bc8cfefe0b5c4398f882be7584c77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <BubblesToSpawnPerTurn>k__BackingField: 3
-  <RequiredInARow>k__BackingField: 5
+  bubblesToSpawnPerTurn: 3
+  requiredInARow: 5
   availableColors:
   - color: {r: 0.9716981, g: 0.33459416, b: 0.33459416, a: 1}
     scoreRequired: 0
@@ -756,21 +756,21 @@ MonoBehaviour:
     circleAbility: {fileID: 11400000, guid: f9287684225e3d440a5ee856458e3de3, type: 2}
     abilitySpawnChance: 0.1
   - color: {r: 0.9528302, g: 0.637925, b: 0.24719654, a: 1}
-    scoreRequired: 50
+    scoreRequired: 10
     circleAbility: {fileID: 0}
     abilitySpawnChance: 0
   - color: {r: 0.23740657, g: 0.9150943, b: 0.68554866, a: 1}
-    scoreRequired: 100
+    scoreRequired: 20
     circleAbility: {fileID: 0}
     abilitySpawnChance: 0
   - color: {r: 0.7493703, g: 0.8867924, b: 0.6148985, a: 1}
-    scoreRequired: 150
+    scoreRequired: 25
     circleAbility: {fileID: 0}
     abilitySpawnChance: 0
+  circleIndicatorPrefab: {fileID: 9146093710329915932, guid: 5f1433704bb793c4f840e04a33c2288c, type: 3}
   <Grid>k__BackingField: {fileID: 1525101743}
   <GameOverPanel>k__BackingField: {fileID: 1351591435}
   <Spawner>k__BackingField: {fileID: 595962883}
-  circleIndicatorPrefab: {fileID: 9146093710329915932, guid: 5f1433704bb793c4f840e04a33c2288c, type: 3}
 --- !u!4 &1064215266
 Transform:
   m_ObjectHideFlags: 0

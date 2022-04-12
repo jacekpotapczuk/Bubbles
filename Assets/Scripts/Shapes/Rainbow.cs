@@ -15,7 +15,6 @@ public class Rainbow : Shape
             Debug.LogError("Factory already has been assigned. You shouldn't change it.");
         }
     }
-
     private ShapeFactory<Rainbow> factory;
     
     public override Color? Color { get; set; } = null;

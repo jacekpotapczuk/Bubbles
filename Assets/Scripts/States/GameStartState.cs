@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class GameStartState : IGameState
 {
     private readonly GameManager gameManager;

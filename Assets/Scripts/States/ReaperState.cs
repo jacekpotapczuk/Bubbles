@@ -14,7 +14,6 @@ public class ReaperState : IGameState
     
     public IGameState Enter()
     {
-        Debug.Log("Reaper State");
         gameManager.ResetReaperTargets();
         return this;
     }

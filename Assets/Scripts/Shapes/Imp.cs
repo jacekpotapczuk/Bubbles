@@ -6,6 +6,8 @@ public class Imp : Shape
     
     [SerializeField] private GameObject targetIndicator;
 
+    public override Color? Color { get; set; } = null;
+    
     public ShapeFactory<Imp> Factory
     {
         get => factory;
@@ -19,12 +21,11 @@ public class Imp : Shape
             Debug.LogError("Factory already has been assigned. You shouldn't change it.");
         }
     }
-
-    private int turnsAlive;
     private ShapeFactory<Imp> factory;
-    private Tile targetLocation;
     
-    public override Color? Color { get; set; } = null;
+    private int turnsAlive;
+    private Tile targetLocation;
+
     public override bool MatchColor(Color? color)
     {
         return false;
@@ -51,7 +52,6 @@ public class Imp : Shape
         targetIndicator.transform.position = targetLocation.transform.position;
         
         turnsAlive += 1;
-        Debug.Log($"Imp, on new turn: {turnsAlive}, {dieAfterTurns}");
         if(turnsAlive > dieAfterTurns)
             Remove();
     }
@@ -63,5 +63,4 @@ public class Imp : Shape
             targetLocation.Shape = null;
         Factory.Reclaim(this);
     }
-    
 }

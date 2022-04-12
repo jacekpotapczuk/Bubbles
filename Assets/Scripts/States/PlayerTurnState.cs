@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -19,6 +18,7 @@ public class PlayerTurnState : IGameState
     private TurnAction turnAction;
     private bool anyCircleCanMove = false;
     private readonly GameManager gameManager;
+    
     public PlayerTurnState(GameManager gameManager)
     {
         this.gameManager = gameManager;
@@ -98,7 +98,9 @@ public class PlayerTurnState : IGameState
             selectedShape.DeSelect();
             tryingToMoveShape = selectedShape;
             selectedShape = null;
-            TryMove(movable, gameManager, currentTile);    
+#pragma warning disable 4014
+            TryMove(movable, gameManager, currentTile);  
+#pragma warning restore 4014
         }
         else if (currentTile.Shape != null)
         {
@@ -142,26 +144,22 @@ public class PlayerTurnState : IGameState
                 continue;
             if (circle.Tile.NorthNeighbour != null && circle.Tile.NorthNeighbour.Shape == null)
             {
-                Debug.Log($"Any cirecle: {circle.Tile.NorthNeighbour}");
                 anyCircleCanMove = true;
                 return true;
             }
             if (circle.Tile.SouthNeighbour != null && circle.Tile.SouthNeighbour.Shape == null)
             {
-                Debug.Log($"Any cirecle: {circle.Tile.SouthNeighbour}");
                 anyCircleCanMove = true;
                 return true;
             }
             if (circle.Tile.WestNeighbour != null && circle.Tile.WestNeighbour.Shape == null)
             {
-                Debug.Log($"Any cirecle: {circle.Tile.WestNeighbour}");
                 anyCircleCanMove = true;
                 return true;
             }
 
             if (circle.Tile.EastNeighbour != null && circle.Tile.EastNeighbour.Shape == null)
             {
-                Debug.Log($"Any cirecle: {circle.Tile.EastNeighbour}");
                 anyCircleCanMove = true;
                 return true;
             }

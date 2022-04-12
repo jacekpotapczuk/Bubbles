@@ -5,7 +5,6 @@ public class SpawnRainbow : CircleAbility
 {
     public override void Do(Circle owner, GameManager gameManager)
     {
-        Debug.Log("Do Spawn rainbow");
         gameManager.Spawner.SpawnRainbow(owner.Tile);
         CheckForPoints(owner.Tile.NorthNeighbour, gameManager);
         CheckForPoints(gameManager.Grid.GetTileInDirection(owner.Tile, 1, 1), gameManager);
@@ -17,7 +16,7 @@ public class SpawnRainbow : CircleAbility
         CheckForPoints(gameManager.Grid.GetTileInDirection(owner.Tile, -1, 1), gameManager);
     }
 
-    private void CheckForPoints(Tile tile, GameManager gameManager)
+    private static void CheckForPoints(Tile tile, GameManager gameManager)
     {
         if (tile != null && tile.Shape != null) 
             gameManager.CheckForPoints(tile.Shape);

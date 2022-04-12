@@ -9,9 +9,8 @@ public class GameGrid : MonoBehaviour
 
     [Header("References")] 
     [SerializeField] private Tile tilePrefab;
-
-
-    public Tile[,] Tiles { get; private set; }
+    
+    private Tile[,] tiles;
     private float sideLength;
     private Camera mainCamera;
 
@@ -43,7 +42,7 @@ public class GameGrid : MonoBehaviour
     public Tile GetTile(int x, int y)
     {
         if (x >= 0 && x < gridSize && y >= 0 && y < gridSize)
-            return Tiles[x, y];
+            return tiles[x, y];
         return null;
     }
     
@@ -55,8 +54,8 @@ public class GameGrid : MonoBehaviour
         {
             for (var x = 0; x < gridSize; x++)
             {
-                if (Tiles[x, y].IsWalkable)
-                    emptyTiles.Add(Tiles[x, y]);
+                if (tiles[x, y].IsWalkable)
+                    emptyTiles.Add(tiles[x, y]);
             }
         }
 
@@ -69,7 +68,7 @@ public class GameGrid : MonoBehaviour
         {
             for (var x = 0; x < gridSize; x++)
             {
-                Tiles[x, y].CleanUp();
+                tiles[x, y].CleanUp();
             }
         }
     }
@@ -119,7 +118,7 @@ public class GameGrid : MonoBehaviour
 
         // instantiate tiles
         var tileSize = sideLength / gridSize;
-        Tiles = new Tile[gridSize, gridSize];
+        tiles = new Tile[gridSize, gridSize];
         for (var y = 0; y < gridSize; y++)
         {
             for (var x = 0; x < gridSize; x++)
@@ -138,15 +137,15 @@ public class GameGrid : MonoBehaviour
                 Tile west = null;
                 Tile east = null;
                 if (y > 0)
-                    south = Tiles[x, y - 1];
+                    south = tiles[x, y - 1];
                 if (x > 0)
-                    west = Tiles[x - 1, y];
+                    west = tiles[x - 1, y];
                 if (y < gridSize - 1)
-                    north = Tiles[x, y + 1];
+                    north = tiles[x, y + 1];
                 if (x < gridSize - 1)
-                    east = Tiles[x + 1, y];
+                    east = tiles[x + 1, y];
                 
-                Tiles[x, y].Initialize(x, y, north, south, west, east);
+                tiles[x, y].Initialize(x, y, north, south, west, east);
             }
         }
     }
@@ -154,7 +153,7 @@ public class GameGrid : MonoBehaviour
     private void InstantiateTile(int x, int y, float tileSize)
     {
         var tile = Instantiate(tilePrefab, transform, true);
-        Tiles[x, y] = tile;
+        tiles[x, y] = tile;
         
         tile.transform.localPosition = new Vector3(x * tileSize, y * tileSize, 0f);
         tile.transform.localScale = new Vector3(tileSize, tileSize, 1f);
@@ -178,18 +177,5 @@ public class GameGrid : MonoBehaviour
         var pos = new Vector3(0f, transform.position.y + side / 2f, 0f);
         Gizmos.DrawWireCube(pos, Vector3.one * side);
         Gizmos.color = Color.white;
-    }
-    
-    
-    [ContextMenu("Test walkable")]
-    public void TestWalkable()
-    {
-        for (var y = 0; y < gridSize; y++)
-        {
-            for (var x = 0; x < gridSize; x++)
-            {
-                Tiles[x, y].GetComponentInChildren<SpriteRenderer>().color = Tiles[x, y].IsWalkable ? Color.green : Color.red;
-            }
-        }
     }
 }
