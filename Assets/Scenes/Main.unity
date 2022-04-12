@@ -756,15 +756,15 @@ MonoBehaviour:
     circleAbility: {fileID: 11400000, guid: f9287684225e3d440a5ee856458e3de3, type: 2}
     abilitySpawnChance: 0.1
   - color: {r: 0.9528302, g: 0.637925, b: 0.24719654, a: 1}
-    scoreRequired: 10
+    scoreRequired: 50
     circleAbility: {fileID: 0}
     abilitySpawnChance: 0
   - color: {r: 0.23740657, g: 0.9150943, b: 0.68554866, a: 1}
-    scoreRequired: 20
+    scoreRequired: 100
     circleAbility: {fileID: 0}
     abilitySpawnChance: 0
   - color: {r: 0.7493703, g: 0.8867924, b: 0.6148985, a: 1}
-    scoreRequired: 25
+    scoreRequired: 150
     circleAbility: {fileID: 0}
     abilitySpawnChance: 0
   circleIndicatorPrefab: {fileID: 9146093710329915932, guid: 5f1433704bb793c4f840e04a33c2288c, type: 3}

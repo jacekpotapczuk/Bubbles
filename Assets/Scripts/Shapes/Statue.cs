@@ -36,7 +36,6 @@ public class Statue : Shape
     public override void OnNewTurn(GameManager gameManager)
     {
         turnsAlive += 1;
-        Debug.Log($"Statue, on new turn: {turnsAlive}, {dieAfterTurns}");
         if(turnsAlive >= dieAfterTurns)
             Remove();
     }

@@ -39,6 +39,7 @@ public class Imp : Shape
 
     public override void OnNewTurn(GameManager gameManager)
     {
+        turnsAlive += 1;
         if (targetLocation != null)
         {
             Tile.Shape = null;
@@ -46,12 +47,17 @@ public class Imp : Shape
             transform.position = Tile.transform.position;
         }
         
-        var emptyTiles = gameManager.Grid.GetEmptyTiles();
-        targetLocation = emptyTiles[Random.Range(0, emptyTiles.Count)];
-        targetLocation.Shape = this;
-        targetIndicator.transform.position = targetLocation.transform.position;
+        if (turnsAlive <= dieAfterTurns - 1)
+        {
+            var emptyTiles = gameManager.Grid.GetEmptyTiles();
+            targetIndicator.gameObject.SetActive(true);
+            targetLocation = emptyTiles[Random.Range(0, emptyTiles.Count)];
+            targetLocation.Shape = this;
+            targetIndicator.transform.position = targetLocation.transform.position;    
+        }
+        else
+            targetIndicator.gameObject.SetActive(false); // hide target indicator if there won't be more moves
         
-        turnsAlive += 1;
         if(turnsAlive > dieAfterTurns)
             Remove();
     }

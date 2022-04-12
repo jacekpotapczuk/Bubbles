@@ -53,7 +53,6 @@ public class PlayerTurnState : IGameState
     {
         if (!AnyCircleCanMove())
         {
-            Debug.Log("No moves available, move to next turn");
             return new PlayerTurnState(gameManager);
         }
         
