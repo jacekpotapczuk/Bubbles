@@ -1,56 +1,61 @@
+# Bubbles Prototype
 
-# Bubbles - zadanie rekrutacyjne
+This project started as a **recruitment assignment** for a game dev role.  
+The goal was to build a grid-based bubble game with some special mechanics and scoring rules.
 
-Zacznę od tego, że przekroczyłem czas rozwiązania. Całość zajęła ~14.5h.
-Jeżeli chcemy liczyć tylko to, co udało się zmieścić w 10h to trzeba wrócić do commita 0982dbc53b82ab6c959ce3f3964bf8215406c191.
-W 10h udało mi się zrobić podstawową wersję + 2 punkt (dodawanie nowych kolorów co 50 punktów).
-Jednak od początku planowałem zrobić punkt 1 (bo 2 i 3 wydawały się znacznie łatwiejsze), więc reszta kodu była pisana z zamiarem dodania tej funkcjonalności,
-dlatego zdecydowałem się dodać to po czasie.
+---
+
+## Time
+
+I went over the planned time, finishing the whole project in around **14.5 hours**.  
+If you want to see what fits into a 10-hour limit, check out commit `0982dbc53b82ab6c959ce3f3964bf8215406c191`.  
+At that point, I had a basic working version + adding new colors every 50 points.  
+I initially planned to implement point 1 first, so most of the code was written with that functionality in mind.  
+Eventually, I added it after the main timebox.
+
+---
 
 ## Design
-Zgodnie z zaleceniami całość pisałem tak, żeby przede wszystkim można było wszystko edytować. Wszystkie wartości liczbowe
-wypisane w zadaniu może zmieniać w edytorze (chociaż są trochę porozrzucane po całym projekcie) i wszytko powinno działać.
-Tak samo starałem się pisać kod, który mógłby być w przyszłości rozszerzalny.
-Do optymalizacji nie przykładałem tak bardzo uwagi, ale jednocześnie starałem się nie robić niepotrzebnych operacji. Na przykład
-przy sprawdzaniu, czy jest ustawionych 5 lub więcej kulek w jednej linii robie to tylko w miejscu gdzie pojawiła się
-nowa kulka, zamiast sprawdzania całego grida. Podobnie używałem pooli dla wszystkiego, więc nie Instantiatuje obiektów
-nie potrzebnie, ale pojawia się też sporo abstrakcji, które pewnie można by było uprościć i zwiększyć trochę wydajność
-względem elastyczności.
 
-## Domyślne oznaczenia
-Nie chciałem bardziej wydłużać czasu, więc w grze nie ma podpowiedzi co jest czym. Grafiki też robione były na szybko, więc może być 
-ciężko się zorientować na pierwszy rzut oka co jest czym. Krótki spis:
-- kulka z białą gwiazdką - kulka posiada umiejętność
-- kulka eksplozji - czerwona
-- kulka pamięci - niebieska
-  - pomnik - czarny trapez
-- kulka szczęścia - zielona
-  - kulka tęczowa - tęcza
-- kulka problemu - żółta
-  - kulki zablokowane mają czarną obwódkę
-- kulka chochlik - magenta
-  - chochlik - filotetowy stworek (lepiej się nie przyglądać xD)
-  - następny ruch chochlika - fioletowy romb
-- kulka żniwaiarz - szara
-  - w tym przypadku trzeba najbardziej uważać, bo nie ma specjalnego
-  oznaczenia i po uruchomieniu  umiejętności wybieramy cel (lub kilka) do usunięcia 
+I wrote everything so that **all values can be tweaked in the editor**. Some numbers are scattered across the project, but they are editable and the game should still work.  
 
-## Edge cases
-Sporo się tego pojawia. Szczególnie to widać jak uruchomimy największą mapę, spawn 10 nowych kulek co turę, każda z nich
-będzie miała 100% szansy na umiejętność i potrzeba 3 w linii do zbicia (przy takiej konfiguracji przede wszystkim trzeba uważać 
-na żniwiarzy, bo strzały się stackują, a często możemy nawet nie zobaczyć, że kulka jest zbijana).
-Jednak starałem się, żeby wszystko było intuicyjne i działało tak jak byśmy się tego spodziewali. Przykładowe decyzje:
+The code is designed to be extendable in the future. I didn't focus heavily on optimization, but I avoided unnecessary operations.  
+For example, when checking for 5+ bubbles in a line, I only check around the newly spawned bubble instead of scanning the whole grid.  
 
-- Chochlika nie można blokować - w zadaniu nie było określone co ma się stać, gdy gracz próbowałby zablokować kolejną
-  pozycje chochlika. Zdecydowałem się rozwiązać to tak, że przyszła lokalizacja chochlika jest zablokowana.
-  Była to opcja najłatwiejsza dla mnie do zaprogramowania i też ma sens gameplayowo.
+I also used **object pools** everywhere, so no unnecessary Instantiation. There are some abstractions that could be simplified to squeeze more performance, but I prioritized flexibility.
 
-- Spawn kulek / koniec gry - można to zrobić przynajmniej na dwa sposoby. Pierwszy (który ja wykorzystałem) zakłada, że wszystkie 3 kulki
-  pojawiają się na mapie jednocześnie i dopiero po tym sprawdzamy, czy tworzą one jakąś linie. W drugim podejściu po pojedynczym
-  spawnie sprawdzamy, czy tworzy on jakąś linie. Odpowiedź może wydawać się oczywista, aby wybrać pierwszą, bo kulki nie mają
-  określonej kolejności. Istotna różnica pojawia się przy końcu gry, bo stosując pierwsze rozwiązanie uznajemy przegraną gdy nie
-  ma miejsca na spawn 3 nowych kulek, co nie do końca pokrywa się z poleceniem.
-  Oznacza to również, że przed wyświetleniem końcowego ekranu powinniśmy dopełnić puste miejsca kulkami.
-  Może to spowodować sytuacje, że wizualnie na ekranie pojawią się kulki tworząc linie 5 co może zmylić użytkownika.
-  Przy drugim podejściu w takiej sytuacji nastąpiłoby zbicie i gracz mógłby kontynuować grę. Ja mimo wszystko wybrałem pierwsze
-  podejście i pewnie zdecydowana większość użytkowników nigdy by nie zauważyła różnicy :D
+---
+
+## Default Indicators
+
+I didn’t want to spend too much extra time, so the game doesn’t have clear hints for all bubble types. Graphics were done quickly, so it might take a moment to understand what each bubble is.  
+Quick reference:
+
+- White star bubble – has a special ability  
+- Explosion bubble – red  
+- Memory bubble – blue  
+- Monument – black trapezoid  
+- Luck bubble – green  
+- Rainbow bubble – rainbow  
+- Problem bubble – yellow  
+- Locked bubbles – black outline  
+- Imp bubble – magenta  
+- Imp character – purple (don’t look too closely xD)  
+- Next imp move – purple diamond  
+- Harvester bubble – gray (be careful, no special visual indicator; you pick the target when activated)  
+
+---
+
+## Edge Cases
+
+There are quite a few, especially on the largest map: spawning 10 new bubbles per turn, each with 100% ability chance, requiring 3 in a line to clear.  
+You have to watch out for harvesters, as shots can stack and sometimes it’s not obvious when a bubble is cleared.  
+
+Some design decisions:
+
+- **Imp blocking:** The assignment didn’t specify what happens if the player tries to block the imp’s next position. I decided that the next imp location is blocked, which is both the easiest to program and makes sense gameplay-wise.  
+- **Spawning / game over:** I chose to spawn all 3 new bubbles at once, then check for lines. The alternative would be checking after each individual spawn. The difference mostly matters at the end of the game. Using my approach, a game over happens when there’s no room to spawn 3 bubbles. This might cause some lines of 5 to appear visually just before the end screen, which could confuse players a bit, but most users probably won’t notice.  
+
+---
+
+This is a **prototype**, not a polished game. The main focus was flexibility, keeping the game editable, and showing that the mechanics work intuitively.
